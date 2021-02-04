@@ -20,7 +20,6 @@ app.use(bodyParser.json({
 
 // Environment vars
 if (process.env.NODE_ENV !== 'production') {
-  // require('dotenv').config();
   dotenv.config();
 }
 
@@ -30,6 +29,8 @@ app.set('port', process.env.PORT || port);
 app.listen(app.get('port'), function () {
     console.log('Proxy server listening on port ' + app.get('port'));
 });
+
+
 
 // Auth
 app.all('*', (req, res, next) => {
