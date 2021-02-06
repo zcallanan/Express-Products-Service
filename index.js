@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser'
 import appV1 from './api/app-v1.js';
 import appV2 from './api/app-v2.js';
+import getProductItems from './db/get-product-items.js'
 
 const app = express();
 const port = 3010;
@@ -46,8 +47,18 @@ app.all('*', (req, res, next) => {
 
 // Response
 
-app.all('*', (req, res) => {
-  req.header('Version') === 'v1' ? appV1(req, res) : appV2(req, res, app)
+app.get('/', getProductItems)
+
+app.all('*', (req, res, next) => {
+  if (req.header('Version') === 'v1') {
+    appV1(req, res)
+  } else {
+    appV2(req, res)
+  }
 })
+
+
+
+
 
 
