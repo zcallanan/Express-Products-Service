@@ -1,23 +1,21 @@
-import query from '../db/index.js';
-import updateProduct from '../db/update-product.js'
+const query = require('../db/index.js');
+const updateProduct = require('../db/update-product.js');
+const format = require('pg-format');
 
 const insertProduct = async (product, item, colors) => {
   try {
     // Check status
-    let result = await query(`SELECT EXISTS(SELECT 1 FROM ${product} WHERE id = $1)`, [item.id]);
+    let insertSelect = format('SELECT EXISTS(SELECT 1 FROM %I WHERE %I = %L)', product, 'id', item.id)
+    let result = await query(insertSelect);
     // If it does not exist, insert
 
     if (!result.rows[0].exists) {
-
-      query(`INSERT INTO ${product} (id, type, name, color, price, manufacturer, availability) \
-        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [item.id,
-      item.type,
-      item.name,
-      colors,
-      item.price,
-      item.manufacturer,
-      ""]);
+      let insertQuery = format('INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
+        VALUES (%L, %L, %L, %L, %L, %L, %L)', product,
+        'id', 'type', 'name', 'color', 'price', 'manufacturer', 'availability',
+        item.id, item.type, item.name, colors, item.price, item.manufacturer, ""
+        );
+      query(insertQuery);
     } else {
       // If it does exist, check if it needs to be updated
       updateProduct(product, item, colors);
@@ -28,4 +26,5 @@ const insertProduct = async (product, item, colors) => {
   }
 }
 
-export default insertProduct;
+// export default insertProduct;
+module.exports = insertProduct;

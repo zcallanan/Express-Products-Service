@@ -39,11 +39,14 @@ const fetchProducts = async (product) => {
     if (await Array.isArray(data) && data.length) {
       // Keep DB in sync with latest API call by deleting records
       deleteProduct(product, productIDs);
+
       await data.forEach(item => {
         // Build manufacturers array
         if (!manufacturers.includes(item.manufacturer)) {
           manufacturers.push(item.manufacturer);
         }
+        // TODO: FETCH availability data
+
         // Build an array of product IDs
         productIDs.push(item.id);
 
@@ -62,7 +65,6 @@ const fetchProducts = async (product) => {
      // TODO: Handle
      return err
   }
-  return manufacturers;
 }
 
 export default fetchProducts;

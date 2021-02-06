@@ -1,8 +1,14 @@
-import query from '../db/index.js';
+const query = require('../db/index.js')
+const format = require('pg-format');
 
 const updateProduct = async (product, item, colors) => {
   try {
-    let recordValues = await query(`SELECT (type, name, color, price, manufacturer) FROM ${product} WHERE id = $1`, [item.id]);
+    let updateSelect = format('SELECT (%I, %I, %I, %I, %I) \
+      FROM %I \
+      WHERE %I = %L',
+      'type', 'name', 'color', 'price', 'manufacturer', product, 'id', item.id
+    )
+    let recordValues = await query(updateSelect);
     // Split to get each column value
     let array = recordValues.rows[0].row.split(',');
 
@@ -14,54 +20,40 @@ const updateProduct = async (product, item, colors) => {
 
     if (item.type !== array[0].replace(/\"|\(+/g, '')) {
       // Update type in DB
-      updateObject.typeString = `type = $${updateObject.array.length + 1}::text, `; // $1
-      updateObject.array.push(item.type);
-      stringValues += updateObject.typeString;
+      const cond1 = format('%I = %L', 'type', item.type);
+      updateObject.array.push(cond1);
     }
 
     if (item.name !== array[1].replace(/["]+/g, '')) {
       // Update name in DB
-      updateObject.nameString = `name = $${updateObject.array.length + 1}::text, `; // $2
-      updateObject.array.push(item.name);
-      stringValues += updateObject.nameString;
+      const cond2 = format('%I = %L', 'name', item.name);
+      updateObject.array.push(cond2);
     }
 
     if (colors !== array[2].replace(/["]+/g, '')) {
       // Update color in DB
-      updateObject.colorString = `color = $${updateObject.array.length + 1}::text, `; // $3
-      updateObject.array.push(colors);
-      stringValues += updateObject.colorString;
+      const cond3 = format('%I = %L', 'color', colors);
+      updateObject.array.push(cond3);
     }
     if (item.price !== Number.parseInt(array[3])) {
       // Update price in DB
-      updateObject.priceString = `price = $${updateObject.array.length + 1}::int, `; // $4
-      updateObject.array.push(item.price);
-      stringValues += updateObject.priceString;
+      const cond4 = format('%I = %L', 'price', item.price);
+      updateObject.array.push(cond4);
     }
     if (item.manufacturer !== array[4].replace(/\"|\)+/g, '')) {
       // Update manufacturer in DB
-      updateObject.manufacturerString = `manufacturer = $${updateObject.array.length + 1}::text, `; // $5
-      updateObject.array.push(item.manufacturer);
-      stringValues += updateObject.manufacturerString;
+      const cond5 = format('%I = %L', 'manufacturer', item.manufacturer);
+      updateObject.array.push(cond5);
     }
 
     if (updateObject.array.length) {
-      // if there's an update string, remove the last comma
-      stringValues = stringValues.slice(0, stringValues.length - 2) + stringValues.slice(stringValues.length - 1);
-    }
-
-    if (updateObject.array.length) {
-      updateObject.array.push(item.id);
-    }
-
-    // UPDATE beanies SET name = $1 WHERE id = $2
-    let updateString = `UPDATE ${product} SET ${stringValues} WHERE id = $${updateObject.array.length}`;
-    if (updateObject.array.length) {
-      query(`${updateString}`, updateObject.array);
+      cond_string = updateObject.array.join(', ')
+      let updateQuery = format('UPDATE %I SET %s WHERE id = %L', product, cond_string, item.id);
+      query(updateQuery);
     }
   } catch (err) {
     console.log(err);
   }
 }
 
-export default updateProduct;
+module.exports = updateProduct;

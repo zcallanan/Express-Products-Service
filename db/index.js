@@ -1,5 +1,5 @@
-import pg from 'pg'
-import dotenv from 'dotenv';
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 // DB Config
 
-const pool = new pg.Pool({
+const pool = new Pool({
   user: process.env.USER,
   host: process.env.HOST,
   database: process.env.DATABASE_NAME,
@@ -24,4 +24,5 @@ const query = async (text, params) => { // params is an array
 
 //pool.end().then(() => console.log('pool has ended'))
 
-export default query;
+// export default query;
+module.exports = query;
