@@ -66,9 +66,6 @@ const fetchProducts = async (product) => {
         // console.log('manufacturers', manufacturers)
         fetchManufacturerAvailability(manufacturer, product);
       });
-
-      return await productIDs;
-
     } else if (await !Array.isArray(data.response)) {
       // Make the request again
       console.log('failed, try again!')

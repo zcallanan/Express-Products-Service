@@ -8,7 +8,7 @@ const appV2 = (req, res) => {
   let manufacturers;
   // Get products for that url
   products.forEach(product => {
-    let productIDs = fetchProducts(product); // Will be run by a job to pull product data every minute
+    fetchProducts(product); // Will be run by a job to pull product data every minute
   })
 }
 
