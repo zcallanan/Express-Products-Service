@@ -1,8 +1,7 @@
 import request from 'request';
 import fetchProducts from './fetch-products.js'
 
-const appV2 = (req, res) => {
-
+const appV2 = (req, res, app) => {
   const products = ['beanies', 'facemasks', 'gloves'];
   Object.freeze(products);
   let manufacturers;
