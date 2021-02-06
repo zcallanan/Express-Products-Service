@@ -47,7 +47,7 @@ app.all('*', (req, res, next) => {
 // Response
 
 app.all('*', (req, res) => {
-  req.header('Version') === 'v1' ? appV1(req, res) : appV2(req, res)
+  req.header('Version') === 'v1' ? appV1(req, res) : appV2(req, res, app)
 })
 
 

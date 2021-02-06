@@ -63,7 +63,6 @@ const fetchProducts = async (product) => {
 
       // Fetch availability data
       manufacturers.forEach(manufacturer => {
-        // console.log('manufacturers', manufacturers)
         fetchManufacturerAvailability(manufacturer, product);
       });
     } else if (await !Array.isArray(data.response)) {
