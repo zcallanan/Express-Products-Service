@@ -1,8 +1,9 @@
 import query from '../db/index.js';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
-import insertProduct from '../db/insert-product.js'
-import deleteProduct from '../db/delete-product.js'
+import fetchManufacturerAvailability from './fetch-manufacturer-availability.js';
+import insertProduct from '../db/insert-product.js';
+import deleteProduct from '../db/delete-product.js';
 
 
 if (process.env.NODE_ENV !== 'production') {
@@ -33,19 +34,22 @@ const fetchProducts = async (product) => {
   let data;
   try {
     // Try to get the data
-      const response = await fetch(url)
-      data = await response.json()
+    const response = await fetch(url);
+    data = await response.json();
 
     if (await Array.isArray(data) && data.length) {
+      // If response is an array and has length
+
       // Keep DB in sync with latest API call by deleting records
       deleteProduct(product, productIDs);
+
+      let manufacturers = [];
 
       await data.forEach(item => {
         // Build manufacturers array
         if (!manufacturers.includes(item.manufacturer)) {
           manufacturers.push(item.manufacturer);
         }
-        // TODO: FETCH availability data
 
         // Build an array of product IDs
         productIDs.push(item.id);
@@ -57,9 +61,15 @@ const fetchProducts = async (product) => {
         insertProduct(product, item, colors);
       })
 
+      // Fetch availability data
+      manufacturers.forEach(manufacturer => {
+        // console.log('manufacturers', manufacturers)
+        fetchManufacturerAvailability(manufacturer, product);
+      });
     } else if (await !Array.isArray(data.response)) {
+      // Make the request again
       console.log('failed, try again!')
-      fetchProducts(url);
+      fetchProducts(product);
     }
   } catch(err) {
      // TODO: Handle
