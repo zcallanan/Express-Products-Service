@@ -47,7 +47,13 @@ app.all('*', (req, res, next) => {
 
 // Response
 
-app.get('/', getProductItems)
+app.get('/', (req, res, next) => {
+  if (req.header('Version') === 'v2') {
+    getProductItems
+  } else {
+    next();
+  }
+});
 
 app.all('*', (req, res, next) => {
   if (req.header('Version') === 'v1') {
