@@ -1,4 +1,4 @@
-import request from 'request';
+const request = require('request');
 
 const appV1 = (req, res) => {
   var targetURL = req.header('Target-URL'); // Target-URL ie. https://example.com or http://example.
@@ -14,4 +14,4 @@ const appV1 = (req, res) => {
     }).pipe(res);
   }
 
-export default appV1;
+module.exports = appV1;

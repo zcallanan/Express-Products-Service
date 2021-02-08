@@ -1,10 +1,10 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import bodyParser from 'body-parser'
-import appV1 from './api/app-v1.js';
-import appV2 from './api/app-v2.js';
-import getProductItems from './db/get-product-items.js'
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const appV1 = require('./api/app-v1.js');
+const getProductItems = require('./db/get-product-items.js')
+const cronFetch = require('./jobs/cron-fetch.js');
 
 const app = express();
 const port = 3010;
@@ -31,7 +31,8 @@ app.listen(app.get('port'), function () {
     console.log('Proxy server listening on port ' + app.get('port'));
 });
 
-
+// Run DB update Job every CRON_IN_MINUTES
+cronFetch();
 
 // Auth
 app.all('*', (req, res, next) => {
@@ -45,21 +46,13 @@ app.all('*', (req, res, next) => {
   }
 });
 
-// Response
-
-app.get('/', (req, res, next) => {
-  if (req.header('Version') === 'v2') {
-    getProductItems
-  } else {
-    next();
-  }
-});
-
 app.all('*', (req, res, next) => {
   if (req.header('Version') === 'v1') {
+    // Act as web proxy for third party API
     appV1(req, res)
-  } else {
-    appV2(req, res)
+  } else if (req.header('Version') === 'v2'){
+    // Return custom API response from DB
+    getProductItems(req, res, next)
   }
 })
 

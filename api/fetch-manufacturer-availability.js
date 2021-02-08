@@ -1,7 +1,7 @@
-import query from '../db/index.js';
-import dotenv from 'dotenv';
-import fetch from 'node-fetch';
-import updateAvailability from '../db/update-availability.js';
+const query = require('../db/index.js');
+const dotenv = require('dotenv');
+const fetch = require('node-fetch');
+const updateAvailability = require('../db/update-availability.js')
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -29,4 +29,4 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
   }
 }
 
-export default fetchManufacturerAvailability;
+module.exports = fetchManufacturerAvailability;
