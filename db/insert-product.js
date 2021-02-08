@@ -1,4 +1,4 @@
-const query = require('../db/index.js');
+const query = require('./index.js');
 const updateProduct = require('../db/update-product.js');
 const format = require('pg-format');
 

@@ -1,10 +1,9 @@
-import query from '../db/index.js';
-import dotenv from 'dotenv';
-import fetch from 'node-fetch';
-import fetchManufacturerAvailability from './fetch-manufacturer-availability.js';
-import insertProduct from '../db/insert-product.js';
-import deleteProduct from '../db/delete-product.js';
-
+const query = require('../db/index.js');
+const dotenv = require('dotenv');
+const fetch = require('node-fetch');
+const fetchManufacturerAvailability = require('./fetch-manufacturer-availability.js');
+const insertProduct = require('../db/insert-product.js');
+const deleteProduct = require('../db/delete-product.js');
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -76,7 +75,8 @@ const fetchProducts = async (product) => {
   }
 }
 
-export default fetchProducts;
+module.exports = fetchProducts;
+
 
 
 

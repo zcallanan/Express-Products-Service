@@ -1,4 +1,4 @@
-const query = require('../db/index.js');
+const query = require('./index.js');
 const format = require('pg-format');
 
 const deleteProduct = async (product, productIDs) => {
