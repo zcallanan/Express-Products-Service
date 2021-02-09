@@ -36,7 +36,9 @@ cronFetch();
 
 // Auth
 app.get('*', (req, res, next) => {
-  const token = req.header('Web-Token');
+  const token = req.header('Web-Token:');
+  console.log('token', token)
+  console.log(process.env.ACCESS_TOKEN_SECRET))
   if (token === null) {
     console.log('Null Token');
     return res.sendStatus(401) // If there isn't any token
