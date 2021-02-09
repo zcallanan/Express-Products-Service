@@ -7,7 +7,7 @@ const getProductItems = require('./db/get-product-items.js')
 const cronFetch = require('./jobs/cron-fetch.js');
 
 const app = express();
-const port = 3010;
+const port = process.env.PORT || 3010;
 
 app.use(cors());
 
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Port
-app.set('port', process.env.PORT || port);
+app.set('port', port);
 
 app.listen(app.get('port'), function () {
     console.log('Proxy server listening on port ' + app.get('port'));
@@ -38,19 +38,24 @@ cronFetch();
 app.all('*', (req, res, next) => {
   const token = req.header('Web-Token');
   if (token === null) {
+    console.log('Null Token');
     return res.sendStatus(401) // If there isn't any token
   } else if (token !== process.env.ACCESS_TOKEN_SECRET) {
+    console.log('Wrong Token');
     return res.sendStatus(403) // If wrong token
   } else {
     next()
+    console.log('Next')
   }
 });
 
 app.all('*', (req, res, next) => {
   if (req.header('Version') === 'v1') {
+    console.log('V1 Request');
     // Act as web proxy for third party API
     appV1(req, res)
   } else if (req.header('Version') === 'v2'){
+    console.log('V2 Request');
     // Return custom API response from DB
     getProductItems(req, res, next)
   }
