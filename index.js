@@ -7,7 +7,7 @@ const getProductItems = require('./db/get-product-items.js')
 const cronFetch = require('./jobs/cron-fetch.js');
 
 const app = express();
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 3010;
 
 app.use(cors());
 
