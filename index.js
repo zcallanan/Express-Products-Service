@@ -36,6 +36,7 @@ cronFetch();
 
 // Auth
 app.get('*', (req, res, next) => {
+  console.log(req.headers)
   const token = req.header('X-WEB-TOKEN');
   console.log('token', token)
   console.log(process.env.ACCESS_TOKEN_SECRET)
