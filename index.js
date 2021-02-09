@@ -7,7 +7,7 @@ const getProductItems = require('./db/get-product-items.js')
 const cronFetch = require('./jobs/cron-fetch.js');
 
 const app = express();
-const port = process.env.PORT || 3010;
+const port = process.env.PORT || 80;
 
 app.use(cors());
 
@@ -27,7 +27,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Port
 app.set('port', port);
 
-app.listen(app.get('port'), function () {
+app.listen(app.get('port'), () => {
     console.log('Proxy server listening on port ' + app.get('port'));
 });
 
