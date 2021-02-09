@@ -35,7 +35,7 @@ app.listen(app.get('port'), function () {
 cronFetch();
 
 // Auth
-app.all('*', (req, res, next) => {
+app.get('*', (req, res, next) => {
   const token = req.header('Web-Token');
   if (token === null) {
     console.log('Null Token');
@@ -49,7 +49,7 @@ app.all('*', (req, res, next) => {
   }
 });
 
-app.all('*', (req, res, next) => {
+app.get('/', (req, res, next) => {
   if (req.header('Version') === 'v1') {
     console.log('V1 Request');
     // Act as web proxy for third party API
@@ -57,7 +57,7 @@ app.all('*', (req, res, next) => {
   } else if (req.header('Version') === 'v2'){
     console.log('V2 Request');
     // Return custom API response from DB
-    getProductItems(req, res, next)
+    getProductItems(req, res)
   }
 })
 
