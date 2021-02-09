@@ -49,7 +49,7 @@ app.get('*', (req, res, next) => {
   }
 });
 
-app.get('/', (req, res, next) => {
+app.get('/', (req, res) => {
   if (req.header('Version') === 'v1') {
     console.log('V1 Request');
     // Act as web proxy for third party API
