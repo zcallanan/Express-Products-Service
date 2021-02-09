@@ -16,7 +16,7 @@ const processColors = (colorArray) => {
       if (colorArray.length - 1 === index){
         colors += `${color}`
       } else {
-        colors += `${color} - `
+        colors += `${color}, `
       }
     })
   } else {
