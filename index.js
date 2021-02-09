@@ -36,7 +36,7 @@ cronFetch();
 
 // Auth
 app.get('*', (req, res, next) => {
-  const token = req.header('Web-Token');
+  const token = req.header('X-WEB-TOKEN');
   console.log('token', token)
   console.log(process.env.ACCESS_TOKEN_SECRET)
   if (token === null) {
@@ -52,11 +52,11 @@ app.get('*', (req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-  if (req.header('Version') === 'v1') {
+  if (req.header('X-VERSION') === 'v1') {
     console.log('V1 Request');
     // Act as web proxy for third party API
     appV1(req, res)
-  } else if (req.header('Version') === 'v2'){
+  } else if (req.header('X-VERSION') === 'v2'){
     console.log('V2 Request');
     // Return custom API response from DB
     getProductItems(req, res)
