@@ -1,6 +1,11 @@
 const query = require('./index.js');
 const format = require('pg-format');
 const { promisify } = require("util");
+const dotenv = require('dotenv');
+
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config();
+}
 
 // Redis
 
@@ -18,7 +23,7 @@ const getAsync = promisify(client.get).bind(client);
 const getResult = async (req) => {
   try {
     return await getAsync(req.header('X-PRODUCT'));
-    //console.log('get result is:', result)
+
   } catch (err) {
     console.log(err)
   }
@@ -36,7 +41,7 @@ const getProductItems = async (req, res) => {
     result = await query(queryString);
 
     // Save object to redis as a hash
-    client.set(req.header('X-PRODUCT'), JSON.stringify(result), 'EX', 300)
+    client.set(req.header('X-PRODUCT'), JSON.stringify(result), 'EX', process.env.CACHE_TIMER)
   };
 
   res.json(result);
