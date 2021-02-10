@@ -36,31 +36,26 @@ cronFetch();
 
 // Auth
 app.get('*', (req, res, next) => {
-  console.log(req.headers)
+
   const token = req.header('X-WEB-TOKEN');
-  console.log('token', token)
-  console.log(process.env.ACCESS_TOKEN_SECRET)
-  if (token === null) {
-    console.log('Null Token');
+
+  if (!token) {
     return res.sendStatus(401) // If there isn't any token
   } else if (token !== process.env.ACCESS_TOKEN_SECRET) {
-    console.log('Wrong Token');
     return res.sendStatus(403) // If wrong token
   } else {
     next()
-    console.log('Next')
   }
 });
 
 app.get('/', (req, res) => {
   if (req.header('X-VERSION') === 'v1') {
-    console.log('V1 Request');
+
     // Act as web proxy for third party API
     appV1(req, res)
   } else if (req.header('X-VERSION') === 'v2'){
-    console.log('V2 Request');
     // Return custom API response from DB
-    getProductItems(req, res)
+    getProductItems(req, res);
   }
 })
 
