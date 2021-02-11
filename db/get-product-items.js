@@ -8,9 +8,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Redis
-
+const url = process.env.REDIS_URL || null;
 const redis = require("redis");
-const client = redis.createClient();
+const client = redis.createClient(url);
 
 client.on("error", (error) => {
   console.error(error);
@@ -37,11 +37,12 @@ const getProductItems = async (req, res) => {
 
   if (!result ) {
     // If no stored hash, get it from the DB
+    const cacheTimer = process.env.CACHE_TIMER || 300;
     let queryString = format('SELECT * FROM %I', req.header('X-PRODUCT'));
     result = await query(queryString);
 
     // Save object to redis as a hash
-    client.set(req.header('X-PRODUCT'), JSON.stringify(result), 'EX', process.env.CACHE_TIMER)
+    client.set(req.header('X-PRODUCT'), JSON.stringify(result), 'EX', cacheTimer)
   };
 
   res.json(result);
