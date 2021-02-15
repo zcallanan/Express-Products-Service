@@ -22,6 +22,9 @@ app.use(bodyParser.json({
 // Environment vars
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
+
+  // Run DB update Job every CRON_IN_MINUTES
+  cronFetch();
 }
 
 // Port
@@ -30,9 +33,6 @@ app.set('port', port);
 app.listen(app.get('port'), () => {
     console.log('Proxy server listening on port ' + app.get('port'));
 });
-
-// Run DB update Job every CRON_IN_MINUTES
-cronFetch();
 
 // Auth
 app.get('*', (req, res, next) => {
