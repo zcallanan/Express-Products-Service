@@ -25,15 +25,16 @@ const getResult = async (req) => {
     return await getAsync(req.header('X-PRODUCT'));
 
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
 
 const getProductItems = async (req, res) => {
   let result;
-  // Get product's stored hash if available
 
+  // Get product's stored hash if available
   result = JSON.parse(await getResult(req));
+  let resValue = {};
 
   if (!result ) {
     // If no stored hash, get it from the DB
@@ -41,11 +42,13 @@ const getProductItems = async (req, res) => {
     let queryString = format('SELECT * FROM %I', req.header('X-PRODUCT'));
     result = await query(queryString);
 
+    resValue[req.header('X-PRODUCT')] = result.rows;
     // Save object to redis as a hash
-    client.set(req.header('X-PRODUCT'), JSON.stringify(result), 'EX', cacheTimer)
-  };
-
-  res.json(result);
+    client.set(req.header('X-PRODUCT'), JSON.stringify(resValue), 'EX', cacheTimer);
+  } else {
+    resValue = result;
+  }
+  res.json(resValue);
 }
 
 module.exports = getProductItems;
