@@ -40,8 +40,10 @@ app.get('*', (req, res, next) => {
   const token = req.header('X-WEB-TOKEN');
 
   if (!token) {
+    console.log(req.headers);
     return res.sendStatus(401) // If there isn't any token
   } else if (token !== process.env.ACCESS_TOKEN_SECRET) {
+    console.log(req.headers);
     return res.sendStatus(403) // If wrong token
   } else {
     next()
