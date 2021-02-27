@@ -18,6 +18,7 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
 
     if (await Array.isArray(data.response) && data.response.length) {
       // If response is an array and has length
+      console.log(`update for ${manufacturer}, ${product}!`)
       updateAvailability(data.response, product);
     } else if (await !Array.isArray(data.response)) {
       // Make the request again
