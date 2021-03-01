@@ -5,11 +5,13 @@ let pool;
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
 
+  const dbName = process.env.NODE_ENV === 'test' ? process.env.DATABASE_NAME_TEST : process.env.DATABASE_NAME;
+
   // Use local DB
   pool = new Pool({
     user: process.env.USER,
     host: process.env.HOST,
-    database: process.env.DATABASE_NAME,
+    database: dbName,
     password: process.env.PASSWORD
   });
 } else {
