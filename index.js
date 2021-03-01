@@ -37,11 +37,11 @@ if (process.env.NODE_ENV !== 'production') {
 app.get('*', (req, res, next) => {
   const token = req.header('X-WEB-TOKEN');
   if (!token) {
-    return res.sendStatus(401) // If there isn't any token
+    return res.sendStatus(401); // If there isn't any token
   } else if (token !== process.env.ACCESS_TOKEN_SECRET) {
-    return res.sendStatus(403) // If wrong token
+    return res.sendStatus(403); // If wrong token
   } else {
-    next()
+    next();
   }
 });
 

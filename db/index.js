@@ -39,7 +39,5 @@ const query = async (text, params) => { // params is an array
   return res;
 };
 
-//pool.end().then(() => console.log('pool has ended'))
-
 // export default query;
 module.exports = query;

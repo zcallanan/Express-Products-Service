@@ -15,7 +15,6 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
     // Try to get the data
     const response = await fetch(url);
     data = await response.json();
-    console.log('product is:', product, manufacturer, data)
 
     if (await Array.isArray(data.response) && data.response.length) {
       // If response is an array and has length
@@ -23,7 +22,7 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
       updateAvailability(data.response, product);
     } else if (await !Array.isArray(data.response)) {
       // Make the request again
-      console.log(`failed for ${manufacturer}, ${product}!`)
+      console.log(`Failed, retrying for ${manufacturer}, ${product}!`)
       fetchManufacturerAvailability(manufacturer, product);
     }
   } catch (err) {
