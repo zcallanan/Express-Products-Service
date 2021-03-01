@@ -13,7 +13,7 @@ const insertProduct = async (product, item, colors) => {
       let insertQuery = format('INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
         VALUES (%L, %L, %L, %L, %L, %L, %L)', product,
         'id', 'type', 'name', 'color', 'price', 'manufacturer', 'availability',
-        item.id, item.type, item.name, colors, item.price, item.manufacturer, ""
+        item.id, item.type, item.name, colors, item.price, item.manufacturer, "Availability Unknown"
         );
       query(insertQuery);
     } else {

@@ -4,24 +4,24 @@ const format = require('pg-format');
 const updateAvailability = async (data, product) => {
   // Keep DB in sync with latest API fetch
   try {
-    let productsQuery = format('SELECT %I, %I FROM %I', 'id', 'availability', product)
+
+    let productsQuery = format('SELECT %I, %I FROM %I', 'id', 'availability', product);
     let tableIDs = await query(productsQuery);
     let datapayload;
     let ind;
     let availability;
 
-    data.forEach(value => {
-        ind = tableIDs.rows.findIndex(x => x.id === value.id.toLowerCase())
-
+    data.forEach(value => { // Each value found in manufacturer's availability data
+        ind = tableIDs.rows.findIndex(x => x.id === value.id.toLowerCase());
         if (ind !== -1) { // ind equals -1 if id not found in data response (product records)
           datapayload = value.DATAPAYLOAD.match(/<INSTOCKVALUE>(.*)<\/INSTOCKVALUE>/);
           if (datapayload) {
             if (datapayload[1] === "OUTOFSTOCK") {
-              availability = "Out of Stock"
+              availability = "Out of Stock";
             } else if (datapayload[1] === "INSTOCK") {
-              availability = "In Stock"
+              availability = "In Stock";
             } else if (datapayload[1] === "LESSTHAN10") {
-              availability = "Less Than 10"
+              availability = "Less Than 10";
             }
           }
 
