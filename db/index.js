@@ -22,7 +22,7 @@ if (process.env.NODE_ENV !== 'production') {
       rejectUnauthorized: false
     }
   });
-}
+};
 
 // DB Config
 let today;

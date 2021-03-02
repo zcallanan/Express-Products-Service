@@ -8,14 +8,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Redis
-const url = process.env.REDIS_URL || null;
+const redis_url = process.env.REDIS_URL || null;
 const redis = require("redis");
-const client = redis.createClient(url);
+const client = redis.createClient(redis_url);
 
-client.on("error", (error) => {
-  console.error(error);
-});
-
+client.on("error", (error) => console.error(error));
 const getAsync = promisify(client.get).bind(client);
 
 // Response
@@ -30,10 +27,8 @@ const getResult = async (req) => {
 }
 
 const getProductItems = async (req, res) => {
-  let result;
-
   // Get product's stored hash if available
-  result = JSON.parse(await getResult(req));
+  let result = JSON.parse(await getResult(req));
   let resValue = {};
 
   if (!result ) {

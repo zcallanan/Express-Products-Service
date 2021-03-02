@@ -5,7 +5,7 @@ const format = require('pg-format');
 const insertProduct = async (product, item, colors) => {
   try {
     // Check status
-    let insertSelect = format('SELECT EXISTS(SELECT 1 FROM %I WHERE %I = %L)', product, 'id', item.id)
+    let insertSelect = format('SELECT EXISTS(SELECT 1 FROM %I WHERE %I = %L)', product, 'id', item.id);
     let result = await query(insertSelect);
     // If it does not exist, insert
 
@@ -19,12 +19,10 @@ const insertProduct = async (product, item, colors) => {
     } else {
       // If it does exist, check if it needs to be updated
       updateProduct(product, item, colors);
-
-    }
+    };
   } catch(err) {
-    console.log(err)
-  }
-}
+    console.log(err);
+  };
+};
 
-// export default insertProduct;
 module.exports = insertProduct;
