@@ -1,5 +1,5 @@
 const { promisify } = require("util");
-const { REDIS_URL } = require("./constants.js")
+const { REDIS_URL } = require("./constants.js");
 const client = require("redis").createClient(REDIS_URL);
 const getAsync = promisify(client.get).bind(client);
 
@@ -13,6 +13,12 @@ const getResult = async (val) => {
   }
 };
 
-const getRedisValue = async (key) => JSON.parse(await getResult(key));
+const getRedisValue = async (key) => {
+  try {
+    JSON.parse(await getResult(key));
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 module.exports = { getRedisValue, getResult, client };

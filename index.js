@@ -6,22 +6,25 @@ const getProductItems = require("./db/get-product-items.js");
 const cronFetch = require("./jobs/cron-fetch.js");
 const subscriberInit = require("./shared/subscriber-init.js");
 
+if (process.env.NODE_ENV !== "production") dotenv.config();
+
 // App Setup
 const app = express();
-const port = process.env.PORT || 3010;
+const port = process.env.NODE_ENV === "test" ? 3020 : process.env.PORT || 3010;
 
 // Port
 app.set("port", port);
 
-app.listen(app.get("port"), () => {
-  console.log("Proxy server listening on port " + app.get("port"));
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(app.get("port"), () => {
+    console.log("Proxy server listening on port " + app.get("port"));
+  });
+}
 
 // Handle CORS
 app.use(cors());
 
-var myLimit = typeof process.argv[2] != "undefined" ? process.argv[2] : "100kb";
-console.log("Using limit: ", myLimit);
+var myLimit = typeof process.argv[2] !== "undefined" ? process.argv[2] : "100kb";
 
 app.use(
   bodyParser.json({
@@ -29,10 +32,7 @@ app.use(
   })
 );
 
-// Environment vars
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config();
-
+if (process.env.NODE_ENV === "development") {
   // Run DB update Job every CRON_IN_MINUTES
   cronFetch();
 
@@ -56,3 +56,5 @@ app.get("*", (req, res, next) => {
 app.get("/", (req, res) => {
   getProductItems(req, res);
 });
+
+module.exports = { app };
