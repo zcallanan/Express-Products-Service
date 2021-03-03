@@ -1,6 +1,10 @@
 const cron = require("node-cron");
 const fetchProducts = require("../api/fetch-products.js");
-const { CRON_IN_MINUTES, START_CRON, END_CRON } = require("../shared/constants.js");
+const {
+  CRON_IN_MINUTES,
+  START_CRON,
+  END_CRON,
+} = require("../shared/constants.js");
 
 const task = cron.schedule(
   `*/${CRON_IN_MINUTES} * * * *`,

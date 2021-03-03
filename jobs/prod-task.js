@@ -9,7 +9,7 @@ products.forEach((product, index) =>
 );
 
 // Kill script if it hasn't killed itself
-setTimeout((function() {
-  console.log('timeout');
+setTimeout(() => {
+  console.log("timeout");
   return process.exit(22);
-}), 120000);
+}, 120000);

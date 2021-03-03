@@ -15,4 +15,4 @@ const getResult = async (val) => {
 
 const getRedisValue = async (key) => JSON.parse(await getResult(key));
 
-module.exports = { getRedisValue, getResult, client };
+module.exports = { getRedisValue;, getResult, client };

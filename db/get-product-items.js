@@ -1,11 +1,15 @@
 const query = require("./index.js");
 const format = require("pg-format");
-const { getRedisValue, getResult, client } = require("../shared/init-redis-client.js");
+const {
+  getRedisValue,
+  getResult,
+  client,
+} = require("../shared/init-redis-client.js");
 const { CACHE_TIMER } = require("../shared/constants.js");
 
 const getProductItems = async (req, res) => {
   // Get product's stored hash if available
-  let result = JSON.parse(await getResult(req.header('X-PRODUCT')));
+  let result = JSON.parse(await getResult(req.header("X-PRODUCT")));
   let resValue = {};
 
   if (!result) {

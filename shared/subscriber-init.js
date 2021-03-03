@@ -1,6 +1,6 @@
 const updateAvailability = require("../db/update-availability.js");
 const { getRedisValue, client } = require("./init-redis-client.js");
-const { CACHE_TIMER, REDIS_URL, KEY_EVENT_SET } = require("./constants.js")
+const { CACHE_TIMER, REDIS_URL, KEY_EVENT_SET } = require("./constants.js");
 
 const subscriberInit = () => {
   const subscriber = require("redis").createClient(REDIS_URL);
@@ -46,8 +46,15 @@ const subscriberInit = () => {
         }
         if (message === "update-ready") {
           updatePromise.then((updateReady) => {
-            if (updateReady["update-ready"].length === manufacturers['manufacturer-list'].length) {
-              console.log("Update is a go", manufacturers["manufacturer-list"], updateReady["update-ready"]);
+            if (
+              updateReady["update-ready"].length ===
+              manufacturers["manufacturer-list"].length
+            ) {
+              console.log(
+                "Update is a go",
+                manufacturers["manufacturer-list"],
+                updateReady["update-ready"]
+              );
               const products = ["beanies", "facemasks", "gloves"];
               products.forEach((product, index) =>
                 setTimeout(
@@ -64,7 +71,6 @@ const subscriberInit = () => {
     }
   });
   subscriber.psubscribe("__key*__:*");
-
 };
 
 module.exports = subscriberInit;

@@ -21,5 +21,5 @@ module.exports = {
   KEY_EVENT_SET,
   CRON_IN_MINUTES,
   START_CRON,
-  END_CRON
+  END_CRON,
 };
