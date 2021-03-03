@@ -40,10 +40,11 @@ const updateAvailability = async (manufacturers, product) => {
             // If API response's availability differs from what is in the DB
             if (availability !== tableIDs.rows[ind].availability) {
               let availabilityUpdate = format(
-                "UPDATE %I SET %I = %L WHERE id = %L",
+                "UPDATE %I SET %I = %L WHERE %I = %L",
                 product,
                 "availability",
                 availability,
+                "id",
                 value.id.toLowerCase()
               );
               query(availabilityUpdate);
