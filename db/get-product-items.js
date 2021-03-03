@@ -1,9 +1,9 @@
-const query = require('./index.js');
-const format = require('pg-format');
+const query = require("./index.js");
+const format = require("pg-format");
 const { promisify } = require("util");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   dotenv.config();
 }
 
@@ -19,31 +19,35 @@ const getAsync = promisify(client.get).bind(client);
 
 const getResult = async (req) => {
   try {
-    return await getAsync(req.header('X-PRODUCT'));
-
+    return await getAsync(req.header("X-PRODUCT"));
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const getProductItems = async (req, res) => {
   // Get product's stored hash if available
   let result = JSON.parse(await getResult(req));
   let resValue = {};
 
-  if (!result ) {
+  if (!result) {
     // If no stored hash, get it from the DB
     const cacheTimer = process.env.CACHE_TIMER || 300;
-    let queryString = format('SELECT * FROM %I', req.header('X-PRODUCT'));
+    let queryString = format("SELECT * FROM %I", req.header("X-PRODUCT"));
     result = await query(queryString);
 
-    resValue[req.header('X-PRODUCT')] = result.rows;
+    resValue[req.header("X-PRODUCT")] = result.rows;
     // Save object to redis as a hash
-    client.set(req.header('X-PRODUCT'), JSON.stringify(resValue), 'EX', cacheTimer);
+    client.set(
+      req.header("X-PRODUCT"),
+      JSON.stringify(resValue),
+      "EX",
+      cacheTimer
+    );
   } else {
     resValue = result;
   }
   res.json(resValue);
-}
+};
 
 module.exports = getProductItems;
