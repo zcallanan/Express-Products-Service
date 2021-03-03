@@ -32,15 +32,20 @@ let today;
 let time;
 
 const query = async (text, params) => {
-  // params is an array
-  const start = Date.now();
-  const res = await pool.query(text, params);
-  const duration = Date.now() - start;
-  console.log("executed query", { text, duration, rows: res.rowCount });
-  today = new Date();
-  time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  console.log(time);
-  return res;
+  try {
+    // params is an array
+    const start = Date.now();
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    console.log("executed query", { text, duration, rows: res.rowCount });
+    today = new Date();
+    time =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    console.log(time);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 // export default query;

@@ -2,6 +2,8 @@ const dotenv = require("dotenv");
 
 if (process.env.NODE_ENV !== "production") dotenv.config();
 
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+
 const PRODUCT_URL = process.env.PRODUCT_URL;
 const MANUFACTURER_URL = process.env.MANUFACTURER_URL;
 
@@ -14,6 +16,7 @@ const START_CRON = process.env.START_CRON || null;
 const END_CRON = process.env.END_CRON || null;
 
 module.exports = {
+  ACCESS_TOKEN_SECRET,
   PRODUCT_URL,
   MANUFACTURER_URL,
   CACHE_TIMER,
