@@ -45,30 +45,13 @@ if (process.env.NODE_ENV !== "production") {
   cronFetch();
 }
 
-// Auth
-app.get("*", (req, res, next) => {
-  const token = req.header("X-WEB-TOKEN");
-  if (!token) {
-    return res.sendStatus(401); // If there isn't any token
-  } else if (token !== process.env.ACCESS_TOKEN_SECRET) {
-    return res.sendStatus(403); // If wrong token
-  } else {
-    next();
-  };
-});
-
-// Return custom API response from DB
-app.get("/", (req, res) => {
-  getProductItems(req, res);
-});
-
 // Get value from Redis that depends upon an async call
 const getResult = async (val) => {
   try {
     return await getAsync(val);
   } catch (err) {
     console.log(err);
-  };
+  }
 };
 
 const getRedisValue = async (key) => JSON.parse(await getResult(key));
@@ -79,6 +62,7 @@ let manufacturersPromise;
 
 const ignoreKeyList = ["manufacturer-list", "beanies", "facemasks", "gloves"];
 
+// Redis subscriber to determine when to update availability column
 subscriber.on("pmessage", (pattern, channel, message) => {
   console.log(
     "(" +
@@ -97,13 +81,13 @@ subscriber.on("pmessage", (pattern, channel, message) => {
         updatePromise.then((updateReady) => {
           if (!updateReady) {
             updateReady = { "update-ready": [message] };
-            console.log("Init:", updateReady);
+            console.log("init", updateReady);
           } else {
             if (!updateReady["update-ready"].includes(message)) {
               updateReady["update-ready"].push(message);
-              console.log("Add to updateReady array:", updateReady);
-            };
-          };
+              console.log("push", updateReady);
+            }
+          }
           client.set(
             "update-ready",
             JSON.stringify(updateReady),
@@ -111,7 +95,7 @@ subscriber.on("pmessage", (pattern, channel, message) => {
             cacheTimer
           );
         });
-      };
+      }
       if (message === "update-ready") {
         updatePromise.then((updateReady) => {
           if (updateReady["update-ready"].length === 6) {
@@ -125,10 +109,27 @@ subscriber.on("pmessage", (pattern, channel, message) => {
                 product
               )
             );
-          };
+          }
         });
-      };
+      }
     });
-  };
+  }
 });
 subscriber.psubscribe("__key*__:*");
+
+// Auth
+app.get("*", (req, res, next) => {
+  const token = req.header("X-WEB-TOKEN");
+  if (!token) {
+    return res.sendStatus(401); // If there isn't any token
+  } else if (token !== process.env.ACCESS_TOKEN_SECRET) {
+    return res.sendStatus(403); // If wrong token
+  } else {
+    next();
+  }
+});
+
+// Return custom API response from DB
+app.get("/", (req, res) => {
+  getProductItems(req, res);
+});
