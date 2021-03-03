@@ -1,27 +1,7 @@
 const query = require("../db/index.js");
-const dotenv = require("dotenv");
 const fetch = require("node-fetch");
-const { promisify } = require("util");
-
-if (process.env.NODE_ENV !== "production") dotenv.config();
-
-// Init Redis
-const redis_url = process.env.REDIS_URL || null;
-const redis = require("redis");
-const client = redis.createClient(redis_url);
-const cacheTimer = process.env.CACHE_TIMER || 300;
-
-client.on("error", (error) => console.error(error));
-const getAsync = promisify(client.get).bind(client);
-
-// Get value from Redis that depends upon an async call
-const getResult = async (manufacturer) => {
-  try {
-    return await getAsync(manufacturer);
-  } catch (err) {
-    console.log(err);
-  }
-};
+const { getResult, client } = require("../shared/init-redis-client.js");
+const { MANUFACTURER_URL, CACHE_TIMER } = require("../shared/constants.js");
 
 // Get Manufacturer Availability
 const fetchManufacturerAvailability = async (manufacturer, product) => {
@@ -31,7 +11,7 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
   if (!result) {
     // No manufacturer data in hash, fetch it
     console.log("Fetching data for", product, manufacturer, result);
-    const url = `${process.env.MANUFACTURER_URL}${manufacturer}`; // Build URL
+    const url = `${MANUFACTURER_URL}${manufacturer}`; // Build URL
     let data;
 
     try {
@@ -44,7 +24,7 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
         // If response is an array and has length store in Redis then update
         // Save object to redis as a hash
         resValue[manufacturer] = data.response;
-        client.set(manufacturer, JSON.stringify(resValue), "EX", cacheTimer);
+        client.set(manufacturer, JSON.stringify(resValue), "EX", CACHE_TIMER);
       } else if (await !Array.isArray(data.response)) {
         // Make the request again
         console.log(`Failed, retrying for ${manufacturer}, ${product}!`);

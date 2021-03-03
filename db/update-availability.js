@@ -1,27 +1,6 @@
 const query = require("./index.js");
 const format = require("pg-format");
-const { promisify } = require("util");
-const dotenv = require("dotenv");
-
-if (process.env.NODE_ENV !== "production") dotenv.config();
-
-// Init Redis
-const redis_url = process.env.REDIS_URL || null;
-const client = require("redis").createClient(redis_url);
-
-client.on("error", (error) => console.error(error));
-const getAsync = promisify(client.get).bind(client);
-
-// Get value from Redis that depends upon an async call
-const getResult = async (val) => {
-  try {
-    return await getAsync(val);
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const getRedisValue = async (key) => JSON.parse(await getResult(key));
+const { getRedisValue } = require("../shared/init-redis-client.js");
 
 const updateAvailability = async (manufacturers, product) => {
   // Keep DB in sync with latest API fetch

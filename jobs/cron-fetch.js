@@ -1,11 +1,9 @@
 const cron = require("node-cron");
 const fetchProducts = require("../api/fetch-products.js");
-const dotenv = require("dotenv");
-
-if (process.env.NODE_ENV !== "production") dotenv.config();
+const { CRON_IN_MINUTES, START_CRON, END_CRON } = require("../shared/constants.js");
 
 const task = cron.schedule(
-  `*/${process.env.CRON_IN_MINUTES} * * * *`,
+  `*/${CRON_IN_MINUTES} * * * *`,
   () => {
     const products = ["beanies", "facemasks", "gloves"];
     products.forEach((product, index) =>
@@ -18,11 +16,11 @@ const task = cron.schedule(
 );
 
 const cronFetch = () => {
-  if (process.env.START_CRON) {
+  if (START_CRON) {
     console.log("start cron");
     task.start();
   }
-  if (process.env.END_CRON) {
+  if (END_CRON) {
     console.log("end cron");
     task.end();
   }
