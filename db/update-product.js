@@ -62,9 +62,10 @@ const updateProduct = async (product, item, colors) => {
     if (updateObject.array.length) {
       cond_string = updateObject.array.join(", ");
       let updateQuery = format(
-        "UPDATE %I SET %s WHERE id = %L",
+        "UPDATE %I SET %s WHERE %I = %L",
         product,
         cond_string,
+        "id",
         item.id
       );
       query(updateQuery);
