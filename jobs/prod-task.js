@@ -1,10 +1,10 @@
 const fetchProducts = require("../api/fetch-products.js");
 const subscriberInit = require("../shared/subscriber-init.js");
+const { PRODUCT_LIST } = require("../shared/constants.js");
 
 subscriberInit();
 
-const products = ["beanies", "facemasks", "gloves"];
-products.forEach((product, index) =>
+PRODUCT_LIST.forEach((product, index) =>
   setTimeout(fetchProducts, 5000 * index, product)
 );
 

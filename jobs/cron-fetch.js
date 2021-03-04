@@ -4,13 +4,13 @@ const {
   CRON_IN_MINUTES,
   START_CRON,
   END_CRON,
+  PRODUCT_LIST,
 } = require("../shared/constants.js");
 
 const task = cron.schedule(
   `*/${CRON_IN_MINUTES} * * * *`,
   () => {
-    const products = ["beanies", "facemasks", "gloves"];
-    products.forEach((product, index) =>
+    PRODUCT_LIST.forEach((product, index) =>
       setTimeout(fetchProducts, 5000 * index, product)
     );
   },

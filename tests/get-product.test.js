@@ -8,10 +8,10 @@ const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
 
 server.listen(3020);
 
-afterAll( async () => {
+afterAll(async () => {
   await client.quit();
   await server.close();
-  await new Promise(resolve => setTimeout(() => resolve(), 500)); // Avoid jest open handle error
+  await new Promise((resolve) => setTimeout(() => resolve(), 500)); // Avoid jest open handle error
 });
 
 describe("GET product data should fail", () => {
@@ -25,7 +25,7 @@ describe("GET product data should fail", () => {
       .expect(401);
     done();
   });
-  test("Request with the wrong token", async (done) =>{
+  test("Request with the wrong token", async (done) => {
     await request(app)
       .get("/")
       .set({
@@ -34,6 +34,17 @@ describe("GET product data should fail", () => {
         "X-PRODUCT": "beanies",
       })
       .expect(403);
+    done();
+  });
+  test("Right credentials, nonexistent product", async (done) => {
+    await request(app)
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "tophats",
+      })
+      .expect(404);
     done();
   });
 });
@@ -49,7 +60,7 @@ describe("GET product data should succeed", () => {
       })
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(beaniesRes)
+      .expect(beaniesRes);
     done();
   });
 
@@ -63,7 +74,7 @@ describe("GET product data should succeed", () => {
       })
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(facemasksRes)
+      .expect(facemasksRes);
     done();
   });
 
@@ -77,9 +88,7 @@ describe("GET product data should succeed", () => {
       })
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(glovesRes)
+      .expect(glovesRes);
     done();
   });
 });
-
-
