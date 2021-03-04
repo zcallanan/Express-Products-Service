@@ -1,5 +1,5 @@
 const updateAvailability = require("../db/update-availability.js");
-const { getRedisValue, client } = require("./init-redis-client.js");
+const { getRedisValue, client } = require("./redis-client.js");
 const { CACHE_TIMER, REDIS_URL, KEY_EVENT_SET, PRODUCT_LIST } = require("./constants.js");
 
 const subscriberInit = () => {

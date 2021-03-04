@@ -1,4 +1,4 @@
-const fetchProducts = require("../api/fetch-products.js");
+const fetchProducts = require("../fetch/fetch-products.js");
 const subscriberInit = require("../shared/subscriber-init.js");
 const { PRODUCT_LIST } = require("../shared/constants.js");
 
