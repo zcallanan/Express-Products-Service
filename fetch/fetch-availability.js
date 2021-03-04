@@ -1,6 +1,5 @@
-const query = require("../db/index.js");
 const fetch = require("node-fetch");
-const { getResult, client } = require("../shared/init-redis-client.js");
+const { getResult, client } = require("../shared/redis-client.js");
 const { MANUFACTURER_URL, CACHE_TIMER } = require("../shared/constants.js");
 
 // Get Manufacturer Availability

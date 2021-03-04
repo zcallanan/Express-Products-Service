@@ -1,6 +1,6 @@
-const query = require("./index.js");
+const query = require("./query.js");
 const format = require("pg-format");
-const { getRedisValue } = require("../shared/init-redis-client.js");
+const { getRedisValue } = require("../shared/redis-client.js");
 
 const updateAvailability = async (manufacturers, product) => {
   // Keep DB in sync with latest API fetch

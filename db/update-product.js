@@ -1,4 +1,4 @@
-const query = require("./index.js");
+const query = require("./query.js");
 const format = require("pg-format");
 
 const updateProduct = async (product, item, colors) => {

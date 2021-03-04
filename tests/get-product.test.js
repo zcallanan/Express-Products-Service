@@ -2,7 +2,7 @@ const http = require("http");
 const { app } = require("../index.js");
 const server = http.createServer(app);
 const request = require("supertest");
-const { client } = require("../shared/init-redis-client.js");
+const { client } = require("../shared/redis-client.js");
 const { beaniesRes, facemasksRes, glovesRes } = require("./test-data.js");
 const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
 

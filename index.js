@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
-const getProductItems = require("./db/get-product-items.js");
+const getProductItems = require("./api/get-product-items.js");
 const cronFetch = require("./jobs/cron-fetch.js");
 const subscriberInit = require("./shared/subscriber-init.js");
 

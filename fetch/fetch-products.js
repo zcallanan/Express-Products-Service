@@ -1,10 +1,9 @@
-const query = require("../db/index.js");
 const fetch = require("node-fetch");
-const fetchManufacturerAvailability = require("./fetch-manufacturer-availability.js");
+const fetchAvailability = require("./fetch-availability.js");
 const updateAvailability = require("../db/update-availability.js");
 const insertProduct = require("../db/insert-product.js");
 const deleteProduct = require("../db/delete-product.js");
-const { getResult, client } = require("../shared/init-redis-client.js");
+const { getResult, client } = require("../shared/redis-client.js");
 const { PRODUCT_URL, CACHE_TIMER } = require("../shared/constants.js");
 
 const processColors = (colorArray) => {
@@ -75,7 +74,7 @@ const fetchProducts = async (product) => {
             "does not include",
             manufacturer
           );
-          fetchManufacturerAvailability(manufacturer, product);
+          fetchAvailability(manufacturer, product);
 
           // Save manufacturer to Redis
           manufacturersFetched["manufacturer-list"].push(manufacturer);
