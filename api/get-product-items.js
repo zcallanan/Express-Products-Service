@@ -12,7 +12,7 @@ const getProductItems = async (req, res) => {
     const productReq = req.header("X-PRODUCT");
     const product = PRODUCT_LIST.includes(productReq) ? productReq : null;
     if (!product) {
-      res.sendStatus(404);
+      res.status(404).send(`The requested product ${productReq} does not exist.`);
     } else {
       // Get product's stored hash if available
       let result =

@@ -22,7 +22,8 @@ describe("GET product data should fail", () => {
         "X-VERSION": "v2",
         "X-PRODUCT": "beanies",
       })
-      .expect(401);
+      .expect(401)
+      .expect("Proper authorization credentials were not provided.");
     done();
   });
   test("Request with the wrong token", async (done) => {
@@ -33,7 +34,8 @@ describe("GET product data should fail", () => {
         "X-VERSION": "v2",
         "X-PRODUCT": "beanies",
       })
-      .expect(403);
+      .expect(403)
+      .expect("Invalid authentication credentials.");
     done();
   });
   test("Right credentials, nonexistent product", async (done) => {
@@ -44,7 +46,8 @@ describe("GET product data should fail", () => {
         "X-VERSION": "v2",
         "X-PRODUCT": "tophats",
       })
-      .expect(404);
+      .expect(404)
+      .expect("The requested product tophats does not exist.");
     done();
   });
 });

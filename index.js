@@ -24,7 +24,8 @@ if (process.env.NODE_ENV !== "test") {
 // Handle CORS
 app.use(cors());
 
-var myLimit = typeof process.argv[2] !== "undefined" ? process.argv[2] : "100kb";
+var myLimit =
+  typeof process.argv[2] !== "undefined" ? process.argv[2] : "100kb";
 
 app.use(
   bodyParser.json({
@@ -40,14 +41,17 @@ if (process.env.NODE_ENV === "development") {
   subscriberInit();
 }
 
-
 // Auth
 app.get("*", (req, res, next) => {
   const token = req.header("X-WEB-TOKEN");
   if (!token) {
-    return res.sendStatus(401); // If there isn't any token
+    return res
+      .status(401)
+      .send("Proper authorization credentials were not provided."); // If there isn't any token
   } else if (token !== process.env.ACCESS_TOKEN_SECRET) {
-    return res.sendStatus(403); // If wrong token
+    return res
+      .status(403)
+      .send("Invalid authentication credentials."); // If wrong token
   } else {
     next();
   }
