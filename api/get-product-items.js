@@ -1,18 +1,16 @@
 const query = require("../db/query.js");
 const format = require("pg-format");
-const { PRODUCT_LIST } = require("../shared/constants.js");
-
+const { PRODUCT_LIST, CACHE_TIMER } = require("../shared/constants.js");
 const {
   getRedisValue,
   getResult,
   client,
 } = require("../shared/redis-client.js");
-const { CACHE_TIMER } = require("../shared/constants.js");
 
 const getProductItems = async (req, res) => {
   try {
     const productReq = req.header("X-PRODUCT");
-    const product = (PRODUCT_LIST.includes(productReq)) ? productReq : null;
+    const product = PRODUCT_LIST.includes(productReq) ? productReq : null;
     if (!product) {
       res.sendStatus(404);
     } else {
