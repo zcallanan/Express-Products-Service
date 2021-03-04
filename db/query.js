@@ -27,18 +27,14 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-// DB Config
-let today;
-let time;
-
 const query = async (text, params) => {
   try {
     // params is an array
     const start = Date.now();
     const res = await pool.query(text, params);
     const duration = Date.now() - start;
-    today = new Date();
-    time =
+    let today = new Date();
+    let time =
       today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     console.log(time, "- executed query", { text, duration, rows: res.rowCount });
     return res;
@@ -47,5 +43,4 @@ const query = async (text, params) => {
   }
 };
 
-// export default query;
 module.exports = query;
