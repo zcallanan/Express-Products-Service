@@ -3,8 +3,15 @@ const { app } = require("../index.js");
 const server = http.createServer(app);
 const request = require("supertest");
 const { client } = require("../shared/redis-client.js");
-const { beaniesRes, facemasksRes, glovesRes } = require("./test-data.js");
 const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
+const {
+  beaniesRes,
+  facemasksRes,
+  glovesRes,
+  beaniesRedisRes,
+  facemasksRedisRes,
+  glovesRedisRes,
+} = require("./test-data.js");
 
 server.listen(3020);
 
@@ -67,6 +74,20 @@ describe("GET product data should succeed", () => {
     done();
   });
 
+  test("Requesting beanies again gives a res from Redis", async (done) => {
+    await request(app)
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "beanies",
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect(beaniesRedisRes);
+    done();
+  });
+
   test("Request facemasks product data succeeds", async (done) => {
     await request(app)
       .get("/")
@@ -81,6 +102,20 @@ describe("GET product data should succeed", () => {
     done();
   });
 
+  test("Requesting facemasks again gives a res from Redis", async (done) => {
+    await request(app)
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "facemasks",
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect(facemasksRedisRes);
+    done();
+  });
+
   test("Request gloves product data succeeds", async (done) => {
     await request(app)
       .get("/")
@@ -92,6 +127,20 @@ describe("GET product data should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(glovesRes);
+    done();
+  });
+
+  test("Requesting gloves again gives a res from Redis", async (done) => {
+    await request(app)
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "gloves",
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect(glovesRedisRes);
     done();
   });
 });
