@@ -15,7 +15,7 @@ const getResult = async (val) => {
 
 const getRedisValue = async (key) => {
   try {
-    JSON.parse(await getResult(key));
+    return JSON.parse(await getResult(key));
   } catch (err) {
     console.log(err);
   }

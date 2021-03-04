@@ -8,10 +8,10 @@ const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
 
 server.listen(3020);
 
-afterAll( async () => {
+afterAll(async () => {
   await client.quit();
   await server.close();
-  await new Promise(resolve => setTimeout(() => resolve(), 500)); // Avoid jest open handle error
+  await new Promise((resolve) => setTimeout(() => resolve(), 500)); // Avoid jest open handle error
 });
 
 describe("GET product data should fail", () => {
@@ -25,7 +25,7 @@ describe("GET product data should fail", () => {
       .expect(401);
     done();
   });
-  test("Request with the wrong token", async (done) =>{
+  test("Request with the wrong token", async (done) => {
     await request(app)
       .get("/")
       .set({
@@ -36,7 +36,7 @@ describe("GET product data should fail", () => {
       .expect(403);
     done();
   });
-  test("Right credentials, wrong product", async (done) => {
+  test("Right credentials, nonexistent product", async (done) => {
     await request(app)
       .get("/")
       .set({
@@ -92,5 +92,3 @@ describe("GET product data should succeed", () => {
     done();
   });
 });
-
-

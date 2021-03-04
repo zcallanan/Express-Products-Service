@@ -40,6 +40,7 @@ if (process.env.NODE_ENV === "development") {
   subscriberInit();
 }
 
+
 // Auth
 app.get("*", (req, res, next) => {
   const token = req.header("X-WEB-TOKEN");
