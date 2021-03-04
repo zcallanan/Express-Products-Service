@@ -37,11 +37,10 @@ const query = async (text, params) => {
     const start = Date.now();
     const res = await pool.query(text, params);
     const duration = Date.now() - start;
-    console.log("executed query", { text, duration, rows: res.rowCount });
     today = new Date();
     time =
       today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    console.log(time);
+    console.log(time, "- executed query", { text, duration, rows: res.rowCount });
     return res;
   } catch (err) {
     console.log(err);

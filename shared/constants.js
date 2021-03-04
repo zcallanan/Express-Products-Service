@@ -15,6 +15,8 @@ const CRON_IN_MINUTES = process.env.CRON_IN_MINUTES || 6;
 const START_CRON = process.env.START_CRON || null;
 const END_CRON = process.env.END_CRON || null;
 
+const PRODUCT_LIST = ["beanies", "facemasks", "gloves"];
+
 module.exports = {
   ACCESS_TOKEN_SECRET,
   PRODUCT_URL,
@@ -25,4 +27,5 @@ module.exports = {
   CRON_IN_MINUTES,
   START_CRON,
   END_CRON,
+  PRODUCT_LIST
 };

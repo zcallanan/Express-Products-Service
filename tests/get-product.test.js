@@ -36,6 +36,17 @@ describe("GET product data should fail", () => {
       .expect(403);
     done();
   });
+  test("Right credentials, wrong product", async (done) => {
+    await request(app)
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "tophats",
+      })
+      .expect(404);
+    done();
+  });
 });
 
 describe("GET product data should succeed", () => {
@@ -49,7 +60,7 @@ describe("GET product data should succeed", () => {
       })
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(beaniesRes)
+      .expect(beaniesRes);
     done();
   });
 
@@ -63,7 +74,7 @@ describe("GET product data should succeed", () => {
       })
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(facemasksRes)
+      .expect(facemasksRes);
     done();
   });
 
@@ -77,7 +88,7 @@ describe("GET product data should succeed", () => {
       })
       .expect("Content-Type", /json/)
       .expect(200)
-      .expect(glovesRes)
+      .expect(glovesRes);
     done();
   });
 });

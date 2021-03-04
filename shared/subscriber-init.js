@@ -1,6 +1,6 @@
 const updateAvailability = require("../db/update-availability.js");
 const { getRedisValue, client } = require("./init-redis-client.js");
-const { CACHE_TIMER, REDIS_URL, KEY_EVENT_SET } = require("./constants.js");
+const { CACHE_TIMER, REDIS_URL, KEY_EVENT_SET, PRODUCT_LIST } = require("./constants.js");
 
 const subscriberInit = () => {
   const subscriber = require("redis").createClient(REDIS_URL);
@@ -55,8 +55,7 @@ const subscriberInit = () => {
                 manufacturers["manufacturer-list"],
                 updateReady["update-ready"]
               );
-              const products = ["beanies", "facemasks", "gloves"];
-              products.forEach((product, index) =>
+              PRODUCT_LIST.forEach((product, index) =>
                 setTimeout(
                   updateAvailability,
                   100 * index,
