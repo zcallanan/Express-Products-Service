@@ -1,6 +1,6 @@
 const fetchProducts = require("../fetch/fetch-products.js");
 const subscriberInit = require("../shared/subscriber-init.js");
-const { PRODUCT_LIST } = require("../shared/constants.js");
+const { PRODUCT_LIST, TIMEOUT } = require("../shared/constants.js");
 
 subscriberInit();
 
@@ -12,4 +12,4 @@ PRODUCT_LIST.forEach((product, index) =>
 setTimeout(() => {
   console.log("timeout");
   return process.exit(22);
-}, 120000);
+}, TIMEOUT);

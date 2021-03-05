@@ -1,12 +1,13 @@
 const { Pool } = require("pg");
 const dotenv = require("dotenv");
+const { NODE_ENV } = require("../shared/constants.js");
 let pool;
 
-if (process.env.NODE_ENV !== "production") {
+if (NODE_ENV !== "production") {
   dotenv.config();
 
   const dbName =
-    process.env.NODE_ENV === "test"
+    NODE_ENV === "test"
       ? process.env.DATABASE_NAME_TEST
       : process.env.DATABASE_NAME;
 

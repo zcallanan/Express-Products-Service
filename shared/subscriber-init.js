@@ -1,14 +1,11 @@
 const updateAvailability = require("../db/update-availability.js");
 const { getRedisValue, client } = require("./redis-client.js");
-const { CACHE_TIMER, REDIS_URL, KEY_EVENT_SET, PRODUCT_LIST } = require("./constants.js");
+const { CACHE_TIMER, REDIS_URL, KEY_EVENT_SET, PRODUCT_LIST, IGNORE_LIST } = require("./constants.js");
 
 const subscriberInit = () => {
   const subscriber = require("redis").createClient(REDIS_URL);
   let updatePromise;
   let manufacturersPromise;
-
-  // Ignore these Redis hashes when they are set
-  const ignoreKeyList = ["manufacturer-list", "beanies", "facemasks", "gloves"];
 
   // Redis subscriber to determine when to update availability column
   subscriber.on("pmessage", (pattern, channel, message) => {
@@ -21,7 +18,7 @@ const subscriberInit = () => {
         ": " +
         message
     );
-    if (channel === KEY_EVENT_SET && !ignoreKeyList.includes(message)) {
+    if (channel === KEY_EVENT_SET && !IGNORE_LIST.includes(message)) {
       manufacturersPromise = getRedisValue("manufacturer-list");
       updatePromise = getRedisValue("update-ready");
       manufacturersPromise.then((manufacturers) => {

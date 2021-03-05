@@ -1,6 +1,11 @@
 const query = require("../db/query.js");
 const format = require("pg-format");
-const { PRODUCT_LIST, CACHE_TIMER } = require("../shared/constants.js");
+const {
+  PRODUCT_LIST,
+  CACHE_TIMER,
+  TEST_CACHE_TIMER,
+  NODE_ENV
+} = require("../shared/constants.js");
 const {
   getRedisValue,
   getResult,
@@ -10,15 +15,19 @@ const {
 const getProductItems = async (req, res) => {
   try {
     const productReq = req.header("X-PRODUCT");
-    const product = PRODUCT_LIST.includes(productReq) ? productReq : null;
+    // Handle nonexistent product requests
+    let product = PRODUCT_LIST.includes(productReq) ? productReq : null;
+
     if (!product) {
-      res.sendStatus(404);
+      res
+        .status(404)
+        .send(`The requested product ${productReq} does not exist.`);
     } else {
       // Get product's stored hash if available
       let result =
-        process.env.NODE_ENV !== "test"
-          ? JSON.parse(await getResult(product))
-          : null;
+        NODE_ENV === "test"
+          ? JSON.parse(await getResult(`${product}_test`))
+          : JSON.parse(await getResult(product));
 
       let resValue = {};
 
@@ -28,18 +37,33 @@ const getProductItems = async (req, res) => {
 
         result = await query(queryString);
 
-        resValue[req.header("X-PRODUCT")] = result.rows;
+        resValue[product] = result.rows;
+
+        // Handle different cache timers
+        const cache =
+          NODE_ENV !== "test" ? CACHE_TIMER : TEST_CACHE_TIMER;
+
+        // Add _test to product
+        if (NODE_ENV === "test") product = `${product}_test`;
+
         // Save object to redis as a hash
-        if (process.env.NODE_ENV !== "test") {
-          client.set(
-            req.header("X-PRODUCT"),
-            JSON.stringify(resValue),
-            "EX",
-            CACHE_TIMER
-          );
-        }
+        client.set(product, JSON.stringify(resValue), "EX", cache);
       } else {
-        resValue = result;
+        // If there is a hash
+        if (NODE_ENV === "test") {
+          // Rename key
+          let rename;
+          if (product === "beanies") {
+            rename = ({ [product]: beanies_test }) => ({ beanies_test });
+          } else if (product === "facemasks") {
+            rename = ({ [product]: facemasks_test }) => ({ facemasks_test });
+          } else if (product === "gloves") {
+            rename = ({ [product]: gloves_test }) => ({ gloves_test });
+          }
+          resValue = rename(result);
+        } else {
+          resValue = result;
+        }
       }
       res.json(resValue);
     }
