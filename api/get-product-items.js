@@ -1,6 +1,11 @@
 const query = require("../db/query.js");
 const format = require("pg-format");
-const { PRODUCT_LIST, CACHE_TIMER, TEST_CACHE_TIMER } = require("../shared/constants.js");
+const {
+  PRODUCT_LIST,
+  CACHE_TIMER,
+  TEST_CACHE_TIMER,
+  NODE_ENV
+} = require("../shared/constants.js");
 const {
   getRedisValue,
   getResult,
@@ -14,12 +19,15 @@ const getProductItems = async (req, res) => {
     let product = PRODUCT_LIST.includes(productReq) ? productReq : null;
 
     if (!product) {
-      res.status(404).send(`The requested product ${productReq} does not exist.`);
+      res
+        .status(404)
+        .send(`The requested product ${productReq} does not exist.`);
     } else {
       // Get product's stored hash if available
-      let result = (process.env.NODE_ENV === 'test')
-        ? JSON.parse(await getResult(`${product}_test`))
-        : JSON.parse(await getResult(product));
+      let result =
+        NODE_ENV === "test"
+          ? JSON.parse(await getResult(`${product}_test`))
+          : JSON.parse(await getResult(product));
 
       let resValue = {};
 
@@ -30,38 +38,32 @@ const getProductItems = async (req, res) => {
         result = await query(queryString);
 
         resValue[product] = result.rows;
-        const cache = process.env.NODE_ENV !== "test" ? CACHE_TIMER : TEST_CACHE_TIMER;
 
-        // Add -test to product if NODE_ENV equal to test
-        if (process.env.NODE_ENV === 'test') product = `${product}_test`;
+        // Handle different cache timers
+        const cache =
+          NODE_ENV !== "test" ? CACHE_TIMER : TEST_CACHE_TIMER;
+
+        // Add _test to product
+        if (NODE_ENV === "test") product = `${product}_test`;
 
         // Save object to redis as a hash
-        client.set(
-          product,
-          JSON.stringify(resValue),
-          "EX",
-          cache
-        );
-
+        client.set(product, JSON.stringify(resValue), "EX", cache);
       } else {
         // If there is a hash
-
-        if (process.env.NODE_ENV === 'test') {
+        if (NODE_ENV === "test") {
           // Rename key
           let rename;
-          if (product === 'beanies') {
-            rename = (({[product]: beanies_test}) => ({beanies_test}));
-          } else if (product === 'facemasks') {
-            rename = (({[product]: facemasks_test}) => ({facemasks_test}));
-          } else if (product === 'gloves') {
-            rename = (({[product]: gloves_test}) => ({gloves_test}));
+          if (product === "beanies") {
+            rename = ({ [product]: beanies_test }) => ({ beanies_test });
+          } else if (product === "facemasks") {
+            rename = ({ [product]: facemasks_test }) => ({ facemasks_test });
+          } else if (product === "gloves") {
+            rename = ({ [product]: gloves_test }) => ({ gloves_test });
           }
-
           resValue = rename(result);
         } else {
           resValue = result;
         }
-
       }
       res.json(resValue);
     }

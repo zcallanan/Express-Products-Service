@@ -15,6 +15,7 @@ const updateAvailability = async (manufacturers, product) => {
     let datapayload;
     let ind;
     let availability;
+    let i = 0;
 
     for (const manufacturer of manufacturers) {
       let manufacturerPromise = getRedisValue(manufacturer);
@@ -39,6 +40,7 @@ const updateAvailability = async (manufacturers, product) => {
 
             // If API response's availability differs from what is in the DB
             if (availability !== tableIDs.rows[ind].availability) {
+              i++;
               let availabilityUpdate = format(
                 "UPDATE %I SET %I = %L WHERE %I = %L",
                 product,
@@ -53,6 +55,7 @@ const updateAvailability = async (manufacturers, product) => {
         });
       });
     }
+    console.log(`Total availability updates for ${product}: ${i}`);
   } catch (err) {
     console.log(err);
   }
