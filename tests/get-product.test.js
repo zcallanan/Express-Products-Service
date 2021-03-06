@@ -4,6 +4,14 @@ const server = http.createServer(app);
 const request = require("supertest");
 const { client } = require("../shared/redis-client.js");
 const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
+const { truncTables, insertRows } = require("./config/db-setup.js");
+const { fetchProductData } = require("../fetch/fetch-products.js");
+const {
+  beaniesInsert,
+  ippalRes,
+  juuranRes,
+  abiplosRes,
+} = require("./data/crud-data.js");
 const {
   beaniesRes,
   facemasksRes,
@@ -11,9 +19,14 @@ const {
   beaniesRedisRes,
   facemasksRedisRes,
   glovesRedisRes,
-} = require("./test-data.js");
+} = require("./data/product-data.js");
 
 server.listen(3020);
+
+beforeAll(async () => {
+  await truncTables();
+  await insertRows();
+});
 
 afterAll(async () => {
   await client.quit();
@@ -142,5 +155,25 @@ describe("GET product data should succeed", () => {
       .expect(200)
       .expect(glovesRedisRes);
     done();
+  });
+});
+
+describe("DB actions should succeed", () => {
+  fetchMock.mockResponses(
+    [JSON.stringify([beaniesInsert]), { status: 200 }],
+    [JSON.stringify([ippalRes])],
+    [JSON.stringify([juuranRes])],
+    [JSON.stringify([abiplosRes])]
+  );
+
+
+
+  test("INSERT beanies data", async () => {
+    try {
+      console.log('try?')
+      fetchProductData("beanies")
+    } catch (err) {
+      console.log(err)
+    }
   });
 });

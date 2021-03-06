@@ -20,16 +20,19 @@ const processColors = (colorArray) => {
   return colors;
 };
 
-const fetchProducts = async (product) => {
+const fetchProductData = async (product) => {
+  console.log('here')
   let productIDs = [];
   let manufacturers = [];
 
   const url = `${PRODUCT_URL}${product}`; // Build URL
   let data;
   try {
+
     // Try to get the data
     const response = await fetch(url);
     data = await response.json();
+    console.log(data)
 
     if ((await Array.isArray(data)) && data.length) {
       // If response is an array and has length
@@ -91,12 +94,13 @@ const fetchProducts = async (product) => {
     } else if (await !Array.isArray(data.response)) {
       // Make the request again
       console.log(`failed to fetch ${product} try again!`);
-      fetchProducts(product);
+      fetchProductData(product);
     }
   } catch (err) {
-    fetchProducts(product);
+    fetchProductData(product);
     console.log(err);
   }
+  return response;
 };
 
-module.exports = fetchProducts;
+module.exports = fetchProductData;
