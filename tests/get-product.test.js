@@ -166,14 +166,11 @@ describe("DB actions should succeed", () => {
     [JSON.stringify([abiplosRes])]
   );
 
-
-
   test("INSERT beanies data", async () => {
     try {
-      console.log('try?')
-      fetchProductData("beanies")
+      fetchProductData("beanies");  // << This is not recognized :(
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   });
 });

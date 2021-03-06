@@ -10,87 +10,46 @@ let truncateQuery;
 let insertQuery;
 
 const truncTables = () => {
-  if (NODE_ENV === "test") console.log("Truncating");
+  if (NODE_ENV === "test") {
+    PRODUCT_LIST.forEach((product) => {
+      truncateQuery = format("TRUNCATE TABLE ONLY %I", product);
+      query(truncateQuery);
+    });
+  }
+};
 
-  PRODUCT_LIST.forEach((product) => {
-    truncateQuery = format("TRUNCATE TABLE ONLY %I", product);
-    query(truncateQuery);
-  });
+const insert = (product, item) => {
+  insertQuery = format(
+    "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
+      VALUES (%L, %L, %L, %L, %L, %L, %L)",
+    product,
+    "id",
+    "type",
+    "name",
+    "color",
+    "price",
+    "manufacturer",
+    "availability",
+    item.id,
+    item.type,
+    item.name,
+    item.color,
+    item.price,
+    item.manufacturer,
+    item.availability
+  );
+  query(insertQuery);
 };
 
 const insertRows = () => {
   if (NODE_ENV === "test") {
-    console.log("Inserting");
     PRODUCT_LIST.forEach((product) => {
       if (product === "beanies") {
-        beaniesData.forEach((item) => {
-          insertQuery = format(
-            "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
-              VALUES (%L, %L, %L, %L, %L, %L, %L)",
-            product,
-            "id",
-            "type",
-            "name",
-            "color",
-            "price",
-            "manufacturer",
-            "availability",
-            item.id,
-            item.type,
-            item.name,
-            item.color,
-            item.price,
-            item.manufacturer,
-            item.availability
-          );
-          query(insertQuery);
-        });
+        beaniesData.forEach((item) => insert(product, item));
       } else if (product === "facemasks") {
-        facemasksData.forEach((item) => {
-          insertQuery = format(
-            "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
-              VALUES (%L, %L, %L, %L, %L, %L, %L)",
-            product,
-            "id",
-            "type",
-            "name",
-            "color",
-            "price",
-            "manufacturer",
-            "availability",
-            item.id,
-            item.type,
-            item.name,
-            item.color,
-            item.price,
-            item.manufacturer,
-            item.availability
-          );
-          query(insertQuery);
-        });
+        facemasksData.forEach((item) => insert(product, item));
       } else if (product === "gloves") {
-        glovesData.forEach((item) => {
-          insertQuery = format(
-            "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
-              VALUES (%L, %L, %L, %L, %L, %L, %L)",
-            product,
-            "id",
-            "type",
-            "name",
-            "color",
-            "price",
-            "manufacturer",
-            "availability",
-            item.id,
-            item.type,
-            item.name,
-            item.color,
-            item.price,
-            item.manufacturer,
-            item.availability
-          );
-          query(insertQuery);
-        });
+        glovesData.forEach((item) => insert(product, item));
       }
     });
   }
