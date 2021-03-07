@@ -6,11 +6,12 @@ const { client } = require("../shared/redis-client.js");
 const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
 const { truncTables, insertRows } = require("./config/db-setup.js");
 const { fetchProductData } = require("../fetch/fetch-products.js");
+const { subscriberInit, subscriber } = require("../shared/subscriber-init.js");
 const {
   insertData,
-  ippalRes,
-  juuranRes,
-  abiplosRes,
+  ippalData,
+  juuranData,
+  abiplosData,
   insertRes,
 } = require("./data/crud-data.js");
 const {
@@ -25,6 +26,8 @@ const {
 server.listen(3020);
 
 beforeAll(async () => {
+  await client.flushall();
+  await subscriberInit();
   await truncTables();
   await new Promise((resolve) => setTimeout(() => resolve(), 500));
   await insertRows();
@@ -33,6 +36,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await new Promise((resolve) => setTimeout(() => resolve(), 500));
   await client.quit();
+  await subscriber.quit();
   await server.close();
   await new Promise((resolve) => setTimeout(() => resolve(), 500));
 });
@@ -153,29 +157,30 @@ describe("GET product data should succeed", () => {
 });
 
 describe("DB actions should succeed", () => {
-  fetchMock.mockResponses(
-    [JSON.stringify(insertData)],
-    [JSON.stringify(ippalRes)],
-    [JSON.stringify(juuranRes)],
-    [JSON.stringify(abiplosRes)]
-  );
-
-  test("INSERT beanies data", async () => {
+  test("INSERT data, UPDATE Availability", async () => {
+    // Product data by default has no availability set, so an update is required as part of this test
+    fetchMock.mockResponses(
+      [JSON.stringify(insertData)],
+      [JSON.stringify(ippalData)],
+      [JSON.stringify(juuranData)],
+      [JSON.stringify(abiplosData)]
+    );
     // Flush Redis
     client.flushall();
     // Insert a new value into DB
     await fetchProductData("beanies");
+    // Give time for Insert/Update
+    await new Promise((resolve) => setTimeout(() => resolve(), 100));
     // Test response
     await request(app)
-    .get("/")
-    .set({
-      "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
-      "X-VERSION": "v2",
-      "X-PRODUCT": "beanies",
-    })
-    .expect("Content-Type", /json/)
-    .expect(200)
-    .expect(insertRes);
-
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "beanies",
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect(insertRes);
   });
 });

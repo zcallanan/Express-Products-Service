@@ -1,6 +1,5 @@
 const fetch = require("node-fetch");
 const fetchAvailability = require("./fetch-availability.js");
-const updateAvailability = require("../db/update-availability.js");
 const insertProduct = require("../db/insert-product.js");
 const deleteProduct = require("../db/delete-product.js");
 const { getResult, client } = require("../shared/redis-client.js");
@@ -61,10 +60,10 @@ const fetchProductData = async (product) => {
       });
 
       // Get availability data
-      for (const manufacturer of manufacturers) {
-        const listString =
+      const listString =
           NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
 
+      for (const manufacturer of manufacturers) {
         let manufacturersFetched = JSON.parse(await getResult(listString));
 
         if (!manufacturersFetched) {

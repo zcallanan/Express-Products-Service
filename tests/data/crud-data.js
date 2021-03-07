@@ -29,7 +29,7 @@ const insertData = [
 ];
 
 // Fetchmock manufacturer availability data
-const ippalRes = {
+const ippalData = {
   code: 200,
   response: [
     {
@@ -40,18 +40,18 @@ const ippalRes = {
   ],
 };
 
-const juuranRes = {
+const juuranData = {
   code: 200,
   response: [
     {
-      id: "B36FC3CC9EEBA54B1B5CD1",
+      id: "003911CE74AEEF0D5C6250",
       DATAPAYLOAD:
-        "<AVAILABILITY>\n  <CODE>200</CODE>\n  <INSTOCKVALUE>INSTOCK</INSTOCKVALUE>\n</AVAILABILITY>",
+        "<AVAILABILITY>\n  <CODE>200</CODE>\n  <INSTOCKVALUE>OUTOFSTOCK</INSTOCKVALUE>\n</AVAILABILITY>",
     },
   ],
 };
 
-const abiplosRes = {
+const abiplosData = {
   code: 200,
   response: [
     {
@@ -62,11 +62,34 @@ const abiplosRes = {
   ],
 };
 
+// FetchMock Update data
+// const juuranUpdateData = {
+//   code: 200,
+//   response: [
+//     {
+//       id: "B36FC3CC9EEBA54B1B5CD1",
+//       DATAPAYLOAD:
+//         "<AVAILABILITY>\n  <CODE>200</CODE>\n  <INSTOCKVALUE>INSTOCK</INSTOCKVALUE>\n</AVAILABILITY>",
+//     },
+//   ],
+// };
+
+// const abiplosUpdateData = {
+//   code: 200,
+//   response: [
+//     {
+//       id: "91AFD5D90FF9A173B5BE",
+//       DATAPAYLOAD:
+//         "<AVAILABILITY>\n  <CODE>200</CODE>\n  <INSTOCKVALUE>OUTOFSTOCK</INSTOCKVALUE>\n</AVAILABILITY>",
+//     },
+//   ],
+// };
+
 // Convert fetchMock insert data to getProduct API response format
 const insertAv = insertData.map(({ ...item }, index) => {
   index === 0
     ? (item.availability = "In Stock")
-    : (item.availability = "Availability Unknown");
+    : (item.availability = "Out of Stock");
   item.color = processColors(item.color);
   return item;
 });
@@ -78,8 +101,8 @@ let insertRes = {
 
 module.exports = {
   insertData,
-  ippalRes,
-  juuranRes,
-  abiplosRes,
+  ippalData,
+  juuranData,
+  abiplosData,
   insertRes,
 };
