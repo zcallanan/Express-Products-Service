@@ -11,6 +11,7 @@ const {
   ippalRes,
   juuranRes,
   abiplosRes,
+  beaniesInsertRes,
 } = require("./data/crud-data.js");
 const {
   beaniesRes,
@@ -25,13 +26,15 @@ server.listen(3020);
 
 beforeAll(async () => {
   await truncTables();
+  await new Promise((resolve) => setTimeout(() => resolve(), 500));
   await insertRows();
 });
 
 afterAll(async () => {
+  await new Promise((resolve) => setTimeout(() => resolve(), 500));
   await client.quit();
   await server.close();
-  await new Promise((resolve) => setTimeout(() => resolve(), 500)); // Avoid jest open handle error
+  await new Promise((resolve) => setTimeout(() => resolve(), 500));
 });
 
 describe("GET product data should fail", () => {
@@ -151,17 +154,28 @@ describe("GET product data should succeed", () => {
 
 describe("DB actions should succeed", () => {
   fetchMock.mockResponses(
-    [JSON.stringify([beaniesInsert]), { status: 200 }],
-    [JSON.stringify([ippalRes])],
-    [JSON.stringify([juuranRes])],
-    [JSON.stringify([abiplosRes])]
+    [JSON.stringify(beaniesInsert)],
+    [JSON.stringify(ippalRes)],
+    [JSON.stringify(juuranRes)],
+    [JSON.stringify(abiplosRes)]
   );
 
   test("INSERT beanies data", async () => {
-    try {
-      await fetchProductData("beanies");  // << This is not recognized :(
-    } catch (err) {
-      console.log(err);
-    }
+    // Flush Redis
+    client.flushall();
+    // Insert a new value into DB
+    await fetchProductData("beanies");
+    // Test response
+    await request(app)
+    .get("/")
+    .set({
+      "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+      "X-VERSION": "v2",
+      "X-PRODUCT": "beanies",
+    })
+    .expect("Content-Type", /json/)
+    .expect(200)
+    .expect(beaniesInsertRes);
+
   });
 });
