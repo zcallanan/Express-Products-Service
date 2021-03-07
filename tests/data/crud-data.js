@@ -62,29 +62,6 @@ const abiplosData = {
   ],
 };
 
-// FetchMock Update data
-// const juuranUpdateData = {
-//   code: 200,
-//   response: [
-//     {
-//       id: "B36FC3CC9EEBA54B1B5CD1",
-//       DATAPAYLOAD:
-//         "<AVAILABILITY>\n  <CODE>200</CODE>\n  <INSTOCKVALUE>INSTOCK</INSTOCKVALUE>\n</AVAILABILITY>",
-//     },
-//   ],
-// };
-
-// const abiplosUpdateData = {
-//   code: 200,
-//   response: [
-//     {
-//       id: "91AFD5D90FF9A173B5BE",
-//       DATAPAYLOAD:
-//         "<AVAILABILITY>\n  <CODE>200</CODE>\n  <INSTOCKVALUE>OUTOFSTOCK</INSTOCKVALUE>\n</AVAILABILITY>",
-//     },
-//   ],
-// };
-
 // Convert fetchMock insert data to getProduct API response format
 const insertAv = insertData.map(({ ...item }, index) => {
   index === 0
