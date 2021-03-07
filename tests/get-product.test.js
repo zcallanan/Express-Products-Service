@@ -4,7 +4,7 @@ const server = http.createServer(app);
 const request = require("supertest");
 const { client } = require("../shared/redis-client.js");
 const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
-const { truncTables, insertRows } = require("./config/db-setup.js");
+const { truncTables, insertRows } = require("./config/setup-jest.js");
 const { fetchProductData } = require("../fetch/fetch-products.js");
 const { subscriberInit, subscriber } = require("../shared/subscriber-init.js");
 const {

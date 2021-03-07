@@ -37,10 +37,7 @@
     ],
     "automock": false,
     "setupFiles": [
-      "./setup-jest.js"
-    ],
-    "setupFilesAfterEnv": [
-      "./setup-jest.js"
+      "./tests/config/setup-jest.js"
     ]
   }
 }

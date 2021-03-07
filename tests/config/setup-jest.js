@@ -1,3 +1,8 @@
+// Setup fetchMock
+const fetchMock = require("jest-fetch-mock");
+fetchMock.enableMocks();
+
+// Setup db reset
 const query = require("../../db/query.js");
 const format = require("pg-format");
 const { PRODUCT_LIST, NODE_ENV } = require("../../shared/constants.js");
