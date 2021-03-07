@@ -11,12 +11,12 @@ const updateAvailability = async (manufacturers, product) => {
       "availability",
       product
     );
+
     let tableIDs = await query(productsQuery);
     let datapayload;
     let ind;
     let availability;
     let i = 0;
-
     for (const manufacturer of manufacturers) {
       let manufacturerPromise = getRedisValue(manufacturer);
       manufacturerPromise.then((manufacturerData) => {

@@ -4,6 +4,16 @@ const server = http.createServer(app);
 const request = require("supertest");
 const { client } = require("../shared/redis-client.js");
 const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
+const { truncTables, insertRows } = require("./config/setup-jest.js");
+const { fetchProductData } = require("../fetch/fetch-products.js");
+const { subscriberInit, subscriber } = require("../shared/subscriber-init.js");
+const {
+  insertData,
+  ippalData,
+  juuranData,
+  abiplosData,
+  insertRes,
+} = require("./data/crud-data.js");
 const {
   beaniesRes,
   facemasksRes,
@@ -11,18 +21,28 @@ const {
   beaniesRedisRes,
   facemasksRedisRes,
   glovesRedisRes,
-} = require("./test-data.js");
+} = require("./data/product-data.js");
 
 server.listen(3020);
 
+beforeAll(async () => {
+  await client.flushall();
+  await subscriberInit();
+  await truncTables();
+  await new Promise((resolve) => setTimeout(() => resolve(), 500));
+  await insertRows();
+});
+
 afterAll(async () => {
+  await new Promise((resolve) => setTimeout(() => resolve(), 500));
   await client.quit();
+  await subscriber.quit();
   await server.close();
-  await new Promise((resolve) => setTimeout(() => resolve(), 500)); // Avoid jest open handle error
+  await new Promise((resolve) => setTimeout(() => resolve(), 500));
 });
 
 describe("GET product data should fail", () => {
-  test("Request with no token", async (done) => {
+  test("Request with no token", async () => {
     await request(app)
       .get("/")
       .set({
@@ -31,9 +51,8 @@ describe("GET product data should fail", () => {
       })
       .expect(401)
       .expect("Proper authorization credentials were not provided.");
-    done();
   });
-  test("Request with the wrong token", async (done) => {
+  test("Request with the wrong token", async () => {
     await request(app)
       .get("/")
       .set({
@@ -43,9 +62,8 @@ describe("GET product data should fail", () => {
       })
       .expect(403)
       .expect("Invalid authentication credentials.");
-    done();
   });
-  test("Right credentials, nonexistent product", async (done) => {
+  test("Right credentials, nonexistent product", async () => {
     await request(app)
       .get("/")
       .set({
@@ -55,12 +73,11 @@ describe("GET product data should fail", () => {
       })
       .expect(404)
       .expect("The requested product tophats does not exist.");
-    done();
   });
 });
 
 describe("GET product data should succeed", () => {
-  test("Request beanies product data succeeds", async (done) => {
+  test("Request beanies product data succeeds", async () => {
     await request(app)
       .get("/")
       .set({
@@ -71,10 +88,9 @@ describe("GET product data should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(beaniesRes);
-    done();
   });
 
-  test("Requesting beanies again gives a res from Redis", async (done) => {
+  test("Requesting beanies again gives a res from Redis", async () => {
     await request(app)
       .get("/")
       .set({
@@ -85,10 +101,9 @@ describe("GET product data should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(beaniesRedisRes);
-    done();
   });
 
-  test("Request facemasks product data succeeds", async (done) => {
+  test("Request facemasks product data succeeds", async () => {
     await request(app)
       .get("/")
       .set({
@@ -99,10 +114,9 @@ describe("GET product data should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(facemasksRes);
-    done();
   });
 
-  test("Requesting facemasks again gives a res from Redis", async (done) => {
+  test("Requesting facemasks again gives a res from Redis", async () => {
     await request(app)
       .get("/")
       .set({
@@ -113,10 +127,9 @@ describe("GET product data should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(facemasksRedisRes);
-    done();
   });
 
-  test("Request gloves product data succeeds", async (done) => {
+  test("Request gloves product data succeeds", async () => {
     await request(app)
       .get("/")
       .set({
@@ -127,10 +140,9 @@ describe("GET product data should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(glovesRes);
-    done();
   });
 
-  test("Requesting gloves again gives a res from Redis", async (done) => {
+  test("Requesting gloves again gives a res from Redis", async () => {
     await request(app)
       .get("/")
       .set({
@@ -141,6 +153,34 @@ describe("GET product data should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(glovesRedisRes);
-    done();
+  });
+});
+
+describe("DB actions should succeed", () => {
+  test("INSERT data, UPDATE Availability", async () => {
+    // Product data by default has no availability set, so an update is required as part of this test
+    fetchMock.mockResponses(
+      [JSON.stringify(insertData)],
+      [JSON.stringify(ippalData)],
+      [JSON.stringify(juuranData)],
+      [JSON.stringify(abiplosData)]
+    );
+    // Flush Redis
+    client.flushall();
+    // Insert a new value into DB
+    await fetchProductData("beanies");
+    // Give time for Insert/Update
+    await new Promise((resolve) => setTimeout(() => resolve(), 100));
+    // Test response
+    await request(app)
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "beanies",
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect(insertRes);
   });
 });

@@ -20,12 +20,10 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
 
       if ((await Array.isArray(data.response)) && data.response.length) {
         console.log(`${manufacturer} data is valid`);
-        // If response is an array and has length store in Redis then update
-        // Save object to redis as a hash
+        // Save object to Redis as a hash
         resValue[manufacturer] = data.response;
         client.set(manufacturer, JSON.stringify(resValue), "EX", CACHE_TIMER);
       } else if (await !Array.isArray(data.response)) {
-        // Make the request again
         console.log(`Failed, retrying for ${manufacturer}, ${product}!`);
         fetchManufacturerAvailability(manufacturer, product);
       }

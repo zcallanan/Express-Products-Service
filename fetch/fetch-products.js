@@ -1,10 +1,13 @@
 const fetch = require("node-fetch");
 const fetchAvailability = require("./fetch-availability.js");
-const updateAvailability = require("../db/update-availability.js");
 const insertProduct = require("../db/insert-product.js");
 const deleteProduct = require("../db/delete-product.js");
 const { getResult, client } = require("../shared/redis-client.js");
-const { PRODUCT_URL, CACHE_TIMER } = require("../shared/constants.js");
+const {
+  PRODUCT_URL,
+  CACHE_TIMER,
+  NODE_ENV,
+} = require("../shared/constants.js");
 
 const processColors = (colorArray) => {
   let colors = "";
@@ -20,7 +23,7 @@ const processColors = (colorArray) => {
   return colors;
 };
 
-const fetchProducts = async (product) => {
+const fetchProductData = async (product) => {
   let productIDs = [];
   let manufacturers = [];
 
@@ -42,7 +45,9 @@ const fetchProducts = async (product) => {
       await data.forEach((item) => {
         // Build manufacturers array
         if (!manufacturers.includes(item.manufacturer))
-          manufacturers.push(item.manufacturer);
+          NODE_ENV === "test"
+            ? manufacturers.push(`${item.manufacturer}_test`)
+            : manufacturers.push(item.manufacturer);
 
         // Build an array of product IDs
         productIDs.push(item.id);
@@ -55,33 +60,34 @@ const fetchProducts = async (product) => {
       });
 
       // Get availability data
+      const listString =
+          NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
+
       for (const manufacturer of manufacturers) {
-        let manufacturersFetched = JSON.parse(
-          await getResult("manufacturer-list")
-        );
+        let manufacturersFetched = JSON.parse(await getResult(listString));
 
         if (!manufacturersFetched) {
           manufacturersFetched = {
-            "manufacturer-list": [],
+            [listString]: [],
           };
           console.log("init", manufacturersFetched);
         }
-        if (!manufacturersFetched["manufacturer-list"].includes(manufacturer)) {
+        if (!manufacturersFetched[listString].includes(manufacturer)) {
           // IF not in Redis, fetch it
           console.log(
             "Calling to fetch",
-            manufacturersFetched["manufacturer-list"],
+            manufacturersFetched[listString],
             "does not include",
             manufacturer
           );
           fetchAvailability(manufacturer, product);
 
           // Save manufacturer to Redis
-          manufacturersFetched["manufacturer-list"].push(manufacturer);
+          manufacturersFetched[listString].push(manufacturer);
           client.set(
-            "manufacturer-list",
+            listString,
             JSON.stringify({
-              "manufacturer-list": manufacturersFetched["manufacturer-list"],
+              [listString]: manufacturersFetched[listString],
             }),
             "EX",
             CACHE_TIMER
@@ -91,12 +97,12 @@ const fetchProducts = async (product) => {
     } else if (await !Array.isArray(data.response)) {
       // Make the request again
       console.log(`failed to fetch ${product} try again!`);
-      fetchProducts(product);
+      fetchProductData(product);
     }
   } catch (err) {
-    fetchProducts(product);
+    fetchProductData(product);
     console.log(err);
   }
 };
 
-module.exports = fetchProducts;
+module.exports = { fetchProductData, processColors };

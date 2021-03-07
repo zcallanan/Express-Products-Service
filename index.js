@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const getProductItems = require("./api/get-product-items.js");
 const cronFetch = require("./jobs/cron-fetch.js");
-const subscriberInit = require("./shared/subscriber-init.js");
+const { subscriberInit } = require("./shared/subscriber-init.js");
 const {
   NODE_ENV,
   ACCESS_TOKEN_SECRET,

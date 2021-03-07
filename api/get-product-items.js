@@ -32,8 +32,9 @@ const getProductItems = async (req, res) => {
       let resValue = {};
 
       if (!result) {
+        const id = "id";
         // If no stored hash, get it from the DB
-        let queryString = format("SELECT * FROM %I", product);
+        let queryString = format("SELECT * FROM %I ORDER BY %I", product, id);
 
         result = await query(queryString);
 

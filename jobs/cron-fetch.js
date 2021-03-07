@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const fetchProducts = require("../fetch/fetch-products.js");
+const { fetchProductData } = require("../fetch/fetch-products.js");
 const {
   CRON_IN_MINUTES,
   START_CRON,
@@ -11,7 +11,7 @@ const task = cron.schedule(
   `*/${CRON_IN_MINUTES} * * * *`,
   () => {
     PRODUCT_LIST.forEach((product, index) =>
-      setTimeout(fetchProducts, 5000 * index, product)
+      setTimeout(fetchProductData, 5000 * index, product)
     );
   },
   {

@@ -1,11 +1,22 @@
 const updateAvailability = require("../db/update-availability.js");
 const { getRedisValue, client } = require("./redis-client.js");
-const { CACHE_TIMER, REDIS_URL, KEY_EVENT_SET, PRODUCT_LIST, IGNORE_LIST } = require("./constants.js");
+const {
+  CACHE_TIMER,
+  REDIS_URL,
+  KEY_EVENT_SET,
+  PRODUCT_LIST,
+  IGNORE_LIST,
+  NODE_ENV,
+} = require("./constants.js");
+const subscriber = require("redis").createClient(REDIS_URL);
 
 const subscriberInit = () => {
-  const subscriber = require("redis").createClient(REDIS_URL);
   let updatePromise;
   let manufacturersPromise;
+  const listString =
+    NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
+  const updateString =
+    NODE_ENV === "test" ? "update-ready_test" : "update-ready";
 
   // Redis subscriber to determine when to update availability column
   subscriber.on("pmessage", (pattern, channel, message) => {
@@ -19,44 +30,45 @@ const subscriberInit = () => {
         message
     );
     if (channel === KEY_EVENT_SET && !IGNORE_LIST.includes(message)) {
-      manufacturersPromise = getRedisValue("manufacturer-list");
-      updatePromise = getRedisValue("update-ready");
+      manufacturersPromise = getRedisValue(listString);
+      updatePromise = getRedisValue(updateString);
+
       manufacturersPromise.then((manufacturers) => {
-        if (manufacturers["manufacturer-list"].includes(message)) {
+        if (manufacturers[listString].includes(message)) {
           updatePromise.then((updateReady) => {
             if (!updateReady) {
-              updateReady = { "update-ready": [message] };
-              console.log("init", updateReady);
+              updateReady = { [updateString]: [message] };
+              console.log("init updateReady:", updateReady);
             } else {
-              if (!updateReady["update-ready"].includes(message)) {
-                updateReady["update-ready"].push(message);
+              if (!updateReady[updateString].includes(message)) {
+                updateReady[updateString].push(message);
                 console.log("push", updateReady);
               }
             }
             client.set(
-              "update-ready",
+              updateString,
               JSON.stringify(updateReady),
               "EX",
               CACHE_TIMER
             );
           });
         }
-        if (message === "update-ready") {
+        if (message === updateString) {
           updatePromise.then((updateReady) => {
             if (
-              updateReady["update-ready"].length ===
-              manufacturers["manufacturer-list"].length
+              updateReady[updateString].length ===
+              manufacturers[listString].length
             ) {
               console.log(
                 "Update is a go",
-                manufacturers["manufacturer-list"],
-                updateReady["update-ready"]
+                manufacturers[listString],
+                updateReady[updateString]
               );
               PRODUCT_LIST.forEach((product, index) =>
                 setTimeout(
                   updateAvailability,
                   100 * index,
-                  manufacturers["manufacturer-list"],
+                  manufacturers[listString],
                   product
                 )
               );
@@ -69,4 +81,4 @@ const subscriberInit = () => {
   subscriber.psubscribe("__key*__:*");
 };
 
-module.exports = subscriberInit;
+module.exports = { subscriberInit, subscriber };
