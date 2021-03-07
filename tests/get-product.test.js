@@ -7,11 +7,11 @@ const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
 const { truncTables, insertRows } = require("./config/db-setup.js");
 const { fetchProductData } = require("../fetch/fetch-products.js");
 const {
-  beaniesInsert,
+  insertData,
   ippalRes,
   juuranRes,
   abiplosRes,
-  beaniesInsertRes,
+  insertRes,
 } = require("./data/crud-data.js");
 const {
   beaniesRes,
@@ -154,7 +154,7 @@ describe("GET product data should succeed", () => {
 
 describe("DB actions should succeed", () => {
   fetchMock.mockResponses(
-    [JSON.stringify(beaniesInsert)],
+    [JSON.stringify(insertData)],
     [JSON.stringify(ippalRes)],
     [JSON.stringify(juuranRes)],
     [JSON.stringify(abiplosRes)]
@@ -175,7 +175,7 @@ describe("DB actions should succeed", () => {
     })
     .expect("Content-Type", /json/)
     .expect(200)
-    .expect(beaniesInsertRes);
+    .expect(insertRes);
 
   });
 });

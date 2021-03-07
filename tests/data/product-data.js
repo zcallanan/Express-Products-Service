@@ -1,3 +1,4 @@
+// getProduct array data
 const beaniesData = [
   {
     id: "0016516931359f9277205a0f",
@@ -61,29 +62,31 @@ const glovesData = [
   },
 ];
 
+// getProduct DB query responses
 const beaniesRes = {
   beanies: beaniesData,
-};
-
-const beaniesRedisRes = {
-  beanies_test: beaniesData,
 };
 
 const facemasksRes = {
   facemasks: facemasksData,
 };
 
-const facemasksRedisRes = {
-  facemasks_test: facemasksData,
-};
-
 const glovesRes = {
   gloves: glovesData,
 };
 
+// getProduct Redis responses
+const beaniesRedisRes = {
+  beanies_test: beaniesData,
+};
+
+const facemasksRedisRes = {
+  facemasks_test: facemasksData,
+};
+
 const glovesRedisRes = {
   gloves_test: glovesData,
-}
+};
 
 module.exports = {
   beaniesRes,
@@ -94,5 +97,5 @@ module.exports = {
   glovesRedisRes,
   beaniesData,
   facemasksData,
-  glovesData
+  glovesData,
 };

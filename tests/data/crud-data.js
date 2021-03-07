@@ -1,6 +1,7 @@
 const { processColors } = require("../../fetch/fetch-products.js");
 
-const beaniesInsert = [
+// FetchMock data for db insertion
+const insertData = [
   {
     id: "0016516931359f9277205a0f",
     name: "ILLEAKOL METROPOLIS STAR",
@@ -27,6 +28,7 @@ const beaniesInsert = [
   },
 ];
 
+// Fetchmock manufacturer availability data
 const ippalRes = {
   code: 200,
   response: [
@@ -60,7 +62,8 @@ const abiplosRes = {
   ],
 };
 
-const insertAv = beaniesInsert.map(({...item}, index) => {
+// Convert fetchMock insert data to getProduct API response format
+const insertAv = insertData.map(({ ...item }, index) => {
   index === 0
     ? (item.availability = "In Stock")
     : (item.availability = "Availability Unknown");
@@ -68,17 +71,15 @@ const insertAv = beaniesInsert.map(({...item}, index) => {
   return item;
 });
 
-let beaniesInsertRes = {
+// Insert response to be tested
+let insertRes = {
   beanies: insertAv,
 };
 
 module.exports = {
-  beaniesInsert,
+  insertData,
   ippalRes,
   juuranRes,
   abiplosRes,
-  beaniesInsertRes,
+  insertRes,
 };
-
-('{"beanies":[{"id":"0016516931359f9277205a0f","name":"ILLEAKOL METROPOLIS STAR","type":"beanies","manufacturer":"ippal","color":["yellow","grey"],"price":51,"availability":"In Stock"},{"id":"003911ce74aeef0d5c6250","name":"TAIAKSOP BRIGHT BUCK","type":"beanies","manufacturer":"juuran","color":["green"],"price":44,"availability":"Availability Unknown"},{"id":"91afd5d90ff9a173b5be","name":"REVUPVE BUCK","type":"beanies","manufacturer":"abiplos","color":["grey"],"price":91,"availability":"Availability Unknown"}]}');
-('{"beanies":[{"id":"0016516931359f9277205a0f","name":"ILLEAKOL METROPOLIS STAR","type":"beanies","manufacturer":"ippal","color":"yellow, grey","price":51,"availability":"In Stock"},{"id":"003911ce74aeef0d5c6250","name":"TAIAKSOP BRIGHT BUCK","type":"beanies","manufacturer":"juuran","color":"green","price":44,"availability":"Availability Unknown"},{"id":"91afd5d90ff9a173b5be","name":"REVUPVE BUCK","type":"beanies","manufacturer":"abiplos","color":"grey","price":91,"availability":"Availability Unknown"}]}');
