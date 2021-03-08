@@ -28,6 +28,17 @@ const insertData = [
   },
 ];
 
+const deleteData = [
+  {
+    id: "0016516931359f9277205a0f",
+    name: "ILLEAKOL METROPOLIS STAR",
+    type: "beanies",
+    manufacturer: "ippal",
+    color: ["yellow", "grey"],
+    price: 51,
+  },
+];
+
 // Fetchmock manufacturer availability data
 const ippalData = {
   code: 200,
@@ -62,18 +73,24 @@ const abiplosData = {
   ],
 };
 
-// Convert fetchMock insert data to getProduct API response format
-const insertAv = insertData.map(({ ...item }, index) => {
-  index === 0
-    ? (item.availability = "In Stock")
-    : (item.availability = "Out of Stock");
-  item.color = processColors(item.color);
-  return item;
-});
+// Convert fetchMock data to getProduct API response format
+const createResponse = (array) => {
+  return array.map(({ ...item }, index) => {
+    index === 0
+      ? (item.availability = "In Stock")
+      : (item.availability = "Out of Stock");
+    item.color = processColors(item.color);
+    return item;
+  });
+};
 
 // Insert response to be tested
 let insertRes = {
-  beanies: insertAv,
+  beanies: createResponse(insertData),
+};
+
+let deleteRes = {
+  beanies: createResponse(deleteData),
 };
 
 module.exports = {
@@ -82,4 +99,6 @@ module.exports = {
   juuranData,
   abiplosData,
   insertRes,
+  deleteData,
+  deleteRes,
 };

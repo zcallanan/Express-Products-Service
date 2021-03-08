@@ -1,6 +1,11 @@
 const fetch = require("node-fetch");
 const { getResult, client } = require("../shared/redis-client.js");
-const { MANUFACTURER_URL, CACHE_TIMER } = require("../shared/constants.js");
+const {
+  MANUFACTURER_URL,
+  CACHE_TIMER,
+  TEST_CACHE_TIMER,
+  NODE_ENV,
+} = require("../shared/constants.js");
 
 // Get Manufacturer Availability
 const fetchManufacturerAvailability = async (manufacturer, product) => {
@@ -22,7 +27,8 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
         console.log(`${manufacturer} data is valid`);
         // Save object to Redis as a hash
         resValue[manufacturer] = data.response;
-        client.set(manufacturer, JSON.stringify(resValue), "EX", CACHE_TIMER);
+        const cache = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+        client.set(manufacturer, JSON.stringify(resValue), "EX", cache);
       } else if (await !Array.isArray(data.response)) {
         console.log(`Failed, retrying for ${manufacturer}, ${product}!`);
         fetchManufacturerAvailability(manufacturer, product);

@@ -13,6 +13,8 @@ const {
   juuranData,
   abiplosData,
   insertRes,
+  deleteData,
+  deleteRes,
 } = require("./data/crud-data.js");
 const {
   beaniesRes,
@@ -25,12 +27,16 @@ const {
 
 server.listen(3020);
 
-beforeAll(async () => {
-  await client.flushall();
-  await subscriberInit();
+const reset = async () => {
   await truncTables();
   await new Promise((resolve) => setTimeout(() => resolve(), 500));
   await insertRows();
+};
+
+beforeAll(async () => {
+  await client.flushall();
+  await subscriberInit();
+  await reset();
 });
 
 afterAll(async () => {
@@ -182,5 +188,30 @@ describe("DB actions should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(insertRes);
+  });
+
+  test("DELETE data", async () => {
+    await reset();
+    fetchMock.mockResponses(
+      [JSON.stringify(deleteData)],
+      [JSON.stringify(ippalData)]
+    );
+    // Flush Redis
+    client.flushall();
+    // Insert a new value into DB
+    await fetchProductData("beanies");
+    // Give time for Insert/Update
+    await new Promise((resolve) => setTimeout(() => resolve(), 100));
+    // Test response
+    await request(app)
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "beanies",
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect(deleteRes);
   });
 });
