@@ -6,6 +6,7 @@ const { getResult, client } = require("../shared/redis-client.js");
 const {
   PRODUCT_URL,
   CACHE_TIMER,
+  TEST_CACHE_TIMER,
   NODE_ENV,
 } = require("../shared/constants.js");
 
