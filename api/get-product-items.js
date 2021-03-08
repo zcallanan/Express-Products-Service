@@ -41,8 +41,7 @@ const getProductItems = async (req, res) => {
         resValue[product] = result.rows;
 
         // Handle different cache timers
-        const cache =
-          NODE_ENV !== "test" ? CACHE_TIMER : TEST_CACHE_TIMER;
+        const cache = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
 
         // Add _test to product
         if (NODE_ENV === "test") product = `${product}_test`;

@@ -61,7 +61,9 @@ const fetchProductData = async (product) => {
 
       // Get availability data
       const listString =
-          NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
+        NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
+
+      const cache = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
 
       for (const manufacturer of manufacturers) {
         let manufacturersFetched = JSON.parse(await getResult(listString));
@@ -90,7 +92,7 @@ const fetchProductData = async (product) => {
               [listString]: manufacturersFetched[listString],
             }),
             "EX",
-            CACHE_TIMER
+            cache
           );
         }
       }

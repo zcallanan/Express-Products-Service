@@ -2,6 +2,7 @@ const updateAvailability = require("../db/update-availability.js");
 const { getRedisValue, client } = require("./redis-client.js");
 const {
   CACHE_TIMER,
+  TEST_CACHE_TIMER,
   REDIS_URL,
   KEY_EVENT_SET,
   PRODUCT_LIST,
@@ -17,8 +18,9 @@ const subscriberInit = () => {
     NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
   const updateString =
     NODE_ENV === "test" ? "update-ready_test" : "update-ready";
-
+  const cache = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
   // Redis subscriber to determine when to update availability column
+
   subscriber.on("pmessage", (pattern, channel, message) => {
     console.log(
       "(" +
@@ -45,12 +47,7 @@ const subscriberInit = () => {
                 console.log("push", updateReady);
               }
             }
-            client.set(
-              updateString,
-              JSON.stringify(updateReady),
-              "EX",
-              CACHE_TIMER
-            );
+            client.set(updateString, JSON.stringify(updateReady), "EX", cache);
           });
         }
         if (message === updateString) {
