@@ -12,7 +12,7 @@ const deleteData = [
 ];
 
 let deleteRes = {
-  beanies: createResponse(deleteData),
+  beanies: createResponse(deleteData, "In Stock", "Out of Stock"),
 };
 
 module.exports = { deleteData, deleteRes };

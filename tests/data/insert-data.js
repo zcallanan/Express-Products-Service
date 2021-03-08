@@ -30,7 +30,7 @@ const insertData = [
 
 // Insert response to be tested
 let insertRes = {
-  beanies: createResponse(insertData),
+  beanies: createResponse(insertData, "In Stock", "Out of Stock"),
 };
 
 // Fetchmock manufacturer availability data

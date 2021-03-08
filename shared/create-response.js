@@ -1,10 +1,10 @@
 // Convert fetchMock data to getProduct API response format
 const { processColors } = require("../fetch/fetch-products.js");
-const createResponse = (array) => {
+const createResponse = (array, val, val_two) => {
   return array.map(({ ...item }, index) => {
     index === 0
-      ? (item.availability = "In Stock")
-      : (item.availability = "Out of Stock");
+      ? (item.availability = val)
+      : (item.availability = val_two);
     item.color = processColors(item.color);
     return item;
   });
