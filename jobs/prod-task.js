@@ -1,4 +1,4 @@
-const { fetchProductData } = require("../fetch/fetch-products.js");
+const fetchProductData = require("../fetch/fetch-products.js");
 const { subscriberInit } = require("../shared/subscriber-init.js");
 const { PRODUCT_LIST, TIMEOUT } = require("../shared/constants.js");
 

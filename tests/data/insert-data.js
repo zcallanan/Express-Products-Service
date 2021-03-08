@@ -1,4 +1,4 @@
-const { processColors } = require("../../fetch/fetch-products.js");
+const createResponse = require("../../shared/create-response.js");
 
 // FetchMock data for db insertion
 const insertData = [
@@ -28,16 +28,10 @@ const insertData = [
   },
 ];
 
-const deleteData = [
-  {
-    id: "0016516931359f9277205a0f",
-    name: "ILLEAKOL METROPOLIS STAR",
-    type: "beanies",
-    manufacturer: "ippal",
-    color: ["yellow", "grey"],
-    price: 51,
-  },
-];
+// Insert response to be tested
+let insertRes = {
+  beanies: createResponse(insertData, "In Stock", "Out of Stock"),
+};
 
 // Fetchmock manufacturer availability data
 const ippalData = {
@@ -73,32 +67,10 @@ const abiplosData = {
   ],
 };
 
-// Convert fetchMock data to getProduct API response format
-const createResponse = (array) => {
-  return array.map(({ ...item }, index) => {
-    index === 0
-      ? (item.availability = "In Stock")
-      : (item.availability = "Out of Stock");
-    item.color = processColors(item.color);
-    return item;
-  });
-};
-
-// Insert response to be tested
-let insertRes = {
-  beanies: createResponse(insertData),
-};
-
-let deleteRes = {
-  beanies: createResponse(deleteData),
-};
-
 module.exports = {
   insertData,
   ippalData,
   juuranData,
   abiplosData,
   insertRes,
-  deleteData,
-  deleteRes,
 };

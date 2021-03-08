@@ -5,7 +5,7 @@ const request = require("supertest");
 const { client } = require("../shared/redis-client.js");
 const { ACCESS_TOKEN_SECRET } = require("../shared/constants.js");
 const { truncTables, insertRows } = require("./config/setup-jest.js");
-const { fetchProductData } = require("../fetch/fetch-products.js");
+const fetchProductData = require("../fetch/fetch-products.js");
 const { subscriberInit, subscriber } = require("../shared/subscriber-init.js");
 const {
   insertData,
@@ -13,9 +13,8 @@ const {
   juuranData,
   abiplosData,
   insertRes,
-  deleteData,
-  deleteRes,
-} = require("./data/crud-data.js");
+} = require("./data/insert-data.js");
+const { deleteData, deleteRes } = require("./data/delete-data.js");
 const {
   beaniesRes,
   facemasksRes,
@@ -200,7 +199,7 @@ describe("DB actions should succeed", () => {
     client.flushall();
     // Insert a new value into DB
     await fetchProductData("beanies");
-    // Give time for Insert/Update
+    // Give time for Delete
     await new Promise((resolve) => setTimeout(() => resolve(), 100));
     // Test response
     await request(app)

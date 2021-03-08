@@ -10,7 +10,7 @@ const PRODUCT_URL = process.env.PRODUCT_URL;
 const MANUFACTURER_URL = process.env.MANUFACTURER_URL;
 
 const CACHE_TIMER = process.env.CACHE_TIMER || 300;
-const TEST_CACHE_TIMER = process.env.TEST_CACHE_TIMER || 10;
+const TEST_CACHE_TIMER = process.env.TEST_CACHE_TIMER || 60;
 const REDIS_URL = process.env.REDIS_URL || null;
 
 const CRON_IN_MINUTES = process.env.CRON_IN_MINUTES || 6;
