@@ -3,26 +3,13 @@ const fetchAvailability = require("./fetch-availability.js");
 const insertProduct = require("../db/insert-product.js");
 const deleteProduct = require("../db/delete-product.js");
 const { getResult, client } = require("../shared/redis-client.js");
+const processColors = require("../shared/process-colors.js");
 const {
   PRODUCT_URL,
   CACHE_TIMER,
   TEST_CACHE_TIMER,
   NODE_ENV,
 } = require("../shared/constants.js");
-
-const processColors = (colorArray) => {
-  let colors = "";
-  if (colorArray.length > 1) {
-    colorArray.forEach((color, index) => {
-      colorArray.length - 1 === index
-        ? (colors += `${color}`)
-        : (colors += `${color}, `);
-    });
-  } else {
-    colors = colorArray[0];
-  }
-  return colors;
-};
 
 const fetchProductData = async (product) => {
   let productIDs = [];
@@ -108,4 +95,4 @@ const fetchProductData = async (product) => {
   }
 };
 
-module.exports = { fetchProductData, processColors };
+module.exports = fetchProductData;

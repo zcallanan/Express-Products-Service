@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const { fetchProductData } = require("../fetch/fetch-products.js");
+const fetchProductData = require("../fetch/fetch-products.js");
 const {
   CRON_IN_MINUTES,
   START_CRON,
