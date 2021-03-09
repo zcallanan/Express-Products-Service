@@ -91,7 +91,6 @@ const fetchProductData = async (product) => {
     }
   } catch (err) {
     fetchProductData(product);
-    console.log(err);
   }
 };
 

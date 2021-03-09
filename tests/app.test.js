@@ -23,6 +23,12 @@ const {
   facemasksRedisRes,
   glovesRedisRes,
 } = require("./data/product-data.js");
+const {
+  updateData,
+  updateRes,
+  hennexData,
+  abiFData,
+} = require("./data/update-data.js");
 
 server.listen(3020);
 
@@ -30,10 +36,10 @@ const reset = async () => {
   await truncTables();
   await new Promise((resolve) => setTimeout(() => resolve(), 500));
   await insertRows();
+  await client.flushall();
 };
 
 beforeAll(async () => {
-  await client.flushall();
   await subscriberInit();
   await reset();
 });
@@ -162,7 +168,7 @@ describe("GET product data should succeed", () => {
 });
 
 describe("DB actions should succeed", () => {
-  test("INSERT data, UPDATE Availability", async () => {
+  test("INSERT data, UPDATE product availability", async () => {
     // Product data by default has no availability set, so an update is required as part of this test
     fetchMock.mockResponses(
       [JSON.stringify(insertData)],
@@ -191,12 +197,11 @@ describe("DB actions should succeed", () => {
 
   test("DELETE data", async () => {
     await reset();
+    await new Promise((resolve) => setTimeout(() => resolve(), 100));
     fetchMock.mockResponses(
       [JSON.stringify(deleteData)],
       [JSON.stringify(ippalData)]
     );
-    // Flush Redis
-    client.flushall();
     // Insert a new value into DB
     await fetchProductData("beanies");
     // Give time for Delete
@@ -212,5 +217,30 @@ describe("DB actions should succeed", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .expect(deleteRes);
+  });
+
+  test("UPDATE product name, manufacturer, price, colors", async () => {
+    await reset();
+    await new Promise((resolve) => setTimeout(() => resolve(), 100));
+    fetchMock.mockResponses(
+      [JSON.stringify(updateData)],
+      [JSON.stringify(hennexData)],
+      [JSON.stringify(abiFData)]
+    );
+    // Update values
+    await fetchProductData("facemasks");
+    // Give time for Update
+    await new Promise((resolve) => setTimeout(() => resolve(), 100));
+    // Test response
+    await request(app)
+      .get("/")
+      .set({
+        "X-WEB-TOKEN": ACCESS_TOKEN_SECRET,
+        "X-VERSION": "v2",
+        "X-PRODUCT": "facemasks",
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .expect(updateRes);
   });
 });
