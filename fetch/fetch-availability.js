@@ -34,8 +34,7 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
         fetchManufacturerAvailability(manufacturer, product);
       }
     } catch (err) {
-      console.log(err);
-      console.log(`Retrying for ${manufacturer} - ${product}`);
+      console.log(`Retrying for ${manufacturer} - ${product}`, err);
       fetchManufacturerAvailability(manufacturer, product);
     }
   }
