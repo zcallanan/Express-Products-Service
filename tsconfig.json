@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "types": ["node", "jest"],
+    "target": "es5",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "rootDir": "./",
+    "outDir": "./build",
+    "strict": true,
+    "allowJs": true,
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "lib": [
+      "esnext"
+    ],
+  },
+  "include": [
+    "src"
+  ]
+}
