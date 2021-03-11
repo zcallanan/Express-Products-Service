@@ -1,9 +1,11 @@
 import query from "./query";
 import format from "pg-format";
-import { QueryResult } from 'pg';
+import { QueryResult } from "pg";
 
-
-const deleteProduct = async (product: string, productIDs: Array<string>): Promise<QueryResult> => {
+const deleteProduct = async (
+  product: string,
+  productIDs: string[]
+): Promise<QueryResult> => {
   // Keep DB in sync with latest API fetch
   try {
     const deleteSelect: string = format("SELECT %I FROM %I", "id", product);

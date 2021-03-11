@@ -1,8 +1,6 @@
 import updateAvailability from "../db/update-availability";
-import { getResult, getClient } from "./redis-client";
+import { getResult } from "./redis-client";
 import {
-  CACHE_TIMER,
-  TEST_CACHE_TIMER,
   REDIS_URL,
   KEY_EVENT_SET,
   PRODUCT_LIST,
@@ -12,15 +10,17 @@ import {
 import redis from "redis";
 import { RedisClient } from "redis";
 const subscriber: RedisClient = redis.createClient({ url: REDIS_URL });
-const client: RedisClient = getClient();
 import { StringList } from "../types";
 
 const subscriberInit = (): RedisClient => {
+  let callOnce = 1;
+  // let createOnce = 1;
   const listString: string =
     NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
   const updateString: string =
     NODE_ENV === "test" ? "update-ready_test" : "update-ready";
-  const cache: number = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+  const array: string[] = [];
+  const updateReady = { [updateString]: array };
   // Redis subscriber to determine when to update availability column
   subscriber.on("pmessage", async (pattern, channel, message) => {
     console.log(
@@ -33,67 +33,40 @@ const subscriberInit = (): RedisClient => {
         message
     );
 
-    if (channel === KEY_EVENT_SET && !IGNORE_LIST.includes(message)) { // Something is set
-      // Check update-ready
-      const updateResult: string | null = await getResult(updateString);
-      let updateReady: StringList | undefined = updateResult
-        ? JSON.parse(updateResult)
-        : undefined;
-      const manufacturerResult: string | null = await getResult(listString);
-      const manufacturers: StringList | undefined = manufacturerResult
-        ? JSON.parse(manufacturerResult)
-        : undefined;
+    const manufacturerResult: string | null = await getResult(listString);
+    const manufacturers: StringList | undefined = manufacturerResult
+      ? JSON.parse(manufacturerResult)
+      : undefined;
 
-      // Create update-ready
-      if (!updateReady) {
-        console.log("Initialize updateReady");
-        updateReady = { [updateString]: [] };
-        client.set(updateString, JSON.stringify(updateReady), "EX", cache);
-      } else if (
+    if (channel === KEY_EVENT_SET && !IGNORE_LIST.includes(message)) {
+      if (!updateReady[updateString].includes(message)) {
+        updateReady[updateString].push(message);
+        console.log("Pushed", message, updateReady[updateString]);
+      }
+      if (
         manufacturers &&
-        message === updateString &&
+        callOnce &&
         updateReady[updateString].length === manufacturers[listString].length
       ) {
-        // Call update availability for all products
         console.log(
-          "Update is a go",
-          manufacturers[listString],
-          updateReady[updateString]
+          "Trigger Update!",
+          updateReady[updateString],
+          ":",
+          manufacturers[listString]
+        );
+        callOnce = 0;
+        // Give time for Insertion
+        await new Promise<string>((resolve) =>
+          setTimeout(() => resolve("Done"), 100)
         );
         PRODUCT_LIST.forEach(function (product, index) {
           return setTimeout(
             updateAvailability,
-            100 * index,
+            50 * index,
             manufacturers[listString],
             product
           );
         });
-      }
-
-      if (manufacturers) {
-        // Push message to update-ready hash
-        if (manufacturers[listString].includes(message)) {
-          console.log("Push", message);
-          updateReady[updateString].push(message);
-          client.set(updateString, JSON.stringify(updateReady), "EX", cache);
-          manufacturers[listString].forEach((manufacturer) => {
-            if (manufacturer !== message) {
-              // Push other manufacturers to hash
-              const manResult = getResult(manufacturer);
-              manResult.then((x) => {
-                if (x && updateReady) {
-                  updateReady[updateString].push(manufacturer);
-                  client.set(
-                    updateString,
-                    JSON.stringify(updateReady),
-                    "EX",
-                    cache
-                  );
-                }
-              });
-            }
-          });
-        }
       }
     }
   });

@@ -37,7 +37,11 @@ const query = async (text: string): Promise<QueryResult> => {
     const today: Date = new Date();
     const time: string =
       today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    console.log(time, "- executed query", { text, duration, rows: res.rowCount });
+    console.log(time, "- executed query", {
+      text,
+      duration,
+      rows: res.rowCount,
+    });
     return res;
   } catch (err) {
     console.log(err);

@@ -1,4 +1,5 @@
 import createResponse from "../../shared/create-response";
+import { ArrayProductItemRaw, ProductAPIRes } from "../../types";
 
 const deleteData: ArrayProductItemRaw = [
   {

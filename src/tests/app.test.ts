@@ -191,7 +191,7 @@ describe("DB actions should succeed", () => {
     // Insert a new value into DB
     await fetchProductData("beanies");
     // Give time for Insert/Update
-    await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 150));
+    await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 200));
     // Test response
     await request(app)
       .get("/")

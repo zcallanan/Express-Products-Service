@@ -6,7 +6,11 @@ import {
   ProductItemProcessed,
 } from "../types";
 
-const createResponse = (array: ArrayProductItemRaw, val: string, val_two: string): ArrayProductItemProcessed => {
+const createResponse = (
+  array: ArrayProductItemRaw,
+  val: string,
+  val_two: string
+): ArrayProductItemProcessed => {
   return array.map(({ ...item }, index) => {
     // Create a copy or TypeScript complains
     const copy: ProductItemProcessed = {
@@ -15,7 +19,7 @@ const createResponse = (array: ArrayProductItemRaw, val: string, val_two: string
       name: "",
       color: "",
       manufacturer: "",
-      price: 0
+      price: 0,
     };
 
     Object.assign(copy, item);

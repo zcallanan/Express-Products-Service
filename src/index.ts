@@ -1,13 +1,9 @@
 import express from "express";
 import cors from "cors";
 import getProductItems from "./api/get-product-items";
-import cronFetch from"./jobs/cron-fetch";
+import cronFetch from "./jobs/cron-fetch";
 import subscriberInit from "./shared/subscriber-init";
-import {
-  NODE_ENV,
-  ACCESS_TOKEN_SECRET,
-  PORT,
-} from "./shared/constants";
+import { NODE_ENV, ACCESS_TOKEN_SECRET, PORT } from "./shared/constants";
 
 const app = express();
 
@@ -32,18 +28,21 @@ if (NODE_ENV === "development") {
 }
 
 // Auth
-app.get("*", (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const token = req.header("X-WEB-TOKEN");
-  if (!token) {
-    return res
-      .status(401)
-      .send("Proper authorization credentials were not provided."); // If there isn't any token
-  } else if (token !== ACCESS_TOKEN_SECRET) {
-    return res.status(403).send("Invalid authentication credentials."); // If wrong token
-  } else {
-    next();
+app.get(
+  "*",
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const token = req.header("X-WEB-TOKEN");
+    if (!token) {
+      return res
+        .status(401)
+        .send("Proper authorization credentials were not provided."); // If there isn't any token
+    } else if (token !== ACCESS_TOKEN_SECRET) {
+      return res.status(403).send("Invalid authentication credentials."); // If wrong token
+    } else {
+      next();
+    }
   }
-});
+);
 
 // Return custom API response from DB
 app.get("/", (req: express.Request, res: express.Response) => {

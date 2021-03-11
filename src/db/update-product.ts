@@ -59,7 +59,11 @@ const updateProduct = async (
 
     if (item.manufacturer !== array[array.length - 1].replace(/"|\)+/g, "")) {
       // Update manufacturer in DB
-      const cond5: string = format("%I = %L", "manufacturer", item.manufacturer);
+      const cond5: string = format(
+        "%I = %L",
+        "manufacturer",
+        item.manufacturer
+      );
       updateObject.array.push(cond5);
     }
 
