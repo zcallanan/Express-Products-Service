@@ -1,17 +1,18 @@
 import fetch from "node-fetch";
-import fetchAvailability from "./fetch-availability";
+import fetchManufacturerAvailability from "./fetch-availability";
 import insertProduct from "../db/insert-product";
 import deleteProduct from "../db/delete-product";
 import { getResult, getClient } from"../shared/redis-client";
 import { RedisClient } from "redis";
-import processColors from "../shared/process-colors";
 import { QueryResult } from 'pg';
+import processColors from "../shared/process-colors";
+
 import {
   PRODUCT_URL,
   CACHE_TIMER,
   TEST_CACHE_TIMER,
   NODE_ENV,
-} from "../shared/constants.js";
+} from "../shared/constants";
 
 const client: RedisClient = getClient();
 
@@ -72,7 +73,7 @@ const fetchProductData = async (product: string): Promise<QueryResult> => {
             "does not include",
             manufacturer
           );
-          fetchAvailability(manufacturer, product);
+          fetchManufacturerAvailability(manufacturer, product);
 
           // Save manufacturer to Redis
           manufacturersFetched[listString].push(manufacturer);

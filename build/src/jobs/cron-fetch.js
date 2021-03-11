@@ -1,22 +1,26 @@
 "use strict";
-var cron = require("node-cron");
-var fetchProductData = require("../fetch/fetch-products.js");
-var _a = require("../shared/constants.js"), CRON_IN_MINUTES = _a.CRON_IN_MINUTES, START_CRON = _a.START_CRON, END_CRON = _a.END_CRON, PRODUCT_LIST = _a.PRODUCT_LIST;
-var task = cron.schedule("*/" + CRON_IN_MINUTES + " * * * *", function () {
-    PRODUCT_LIST.forEach(function (product, index) {
-        return setTimeout(fetchProductData, 5000 * index, product);
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_cron_1 = __importDefault(require("node-cron"));
+var fetch_products_1 = __importDefault(require("../fetch/fetch-products"));
+var constants_1 = require("../shared/constants");
+var task = node_cron_1.default.schedule("*/" + constants_1.CRON_IN_MINUTES + " * * * *", function () {
+    constants_1.PRODUCT_LIST.forEach(function (product, index) {
+        return setTimeout(fetch_products_1.default, 5000 * index, product);
     });
 }, {
     scheduled: false,
 });
 var cronFetch = function () {
-    if (START_CRON) {
+    if (constants_1.START_CRON) {
         console.log("start cron");
         task.start();
     }
-    if (END_CRON) {
+    if (constants_1.END_CRON) {
         console.log("end cron");
         task.end();
     }
 };
-module.exports = cronFetch;
+exports.default = cronFetch;

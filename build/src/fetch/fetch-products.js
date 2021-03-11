@@ -45,7 +45,7 @@ var insert_product_1 = __importDefault(require("../db/insert-product"));
 var delete_product_1 = __importDefault(require("../db/delete-product"));
 var redis_client_1 = require("../shared/redis-client");
 var process_colors_1 = __importDefault(require("../shared/process-colors"));
-var constants_js_1 = require("../shared/constants.js");
+var constants_1 = require("../shared/constants");
 var client = redis_client_1.getClient();
 var fetchProductData = function (product) { return __awaiter(void 0, void 0, void 0, function () {
     var productIDs, manufacturers, url, data, response, listString, cache, result, manufacturersFetched, _i, manufacturers_1, manufacturer, err_1;
@@ -55,7 +55,7 @@ var fetchProductData = function (product) { return __awaiter(void 0, void 0, voi
             case 0:
                 productIDs = [];
                 manufacturers = [];
-                url = "" + constants_js_1.PRODUCT_URL + product;
+                url = "" + constants_1.PRODUCT_URL + product;
                 _c.label = 1;
             case 1:
                 _c.trys.push([1, 10, , 11]);
@@ -74,7 +74,7 @@ var fetchProductData = function (product) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, data.forEach(function (item) {
                         // Build manufacturers array
                         if (!manufacturers.includes(item.manufacturer))
-                            constants_js_1.NODE_ENV === "test"
+                            constants_1.NODE_ENV === "test"
                                 ? manufacturers.push(item.manufacturer + "_test")
                                 : manufacturers.push(item.manufacturer);
                         // Build an array of product IDs
@@ -86,8 +86,8 @@ var fetchProductData = function (product) { return __awaiter(void 0, void 0, voi
                     })];
             case 5:
                 _c.sent();
-                listString = constants_js_1.NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
-                cache = constants_js_1.NODE_ENV === "test" ? constants_js_1.TEST_CACHE_TIMER : constants_js_1.CACHE_TIMER;
+                listString = constants_1.NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
+                cache = constants_1.NODE_ENV === "test" ? constants_1.TEST_CACHE_TIMER : constants_1.CACHE_TIMER;
                 return [4 /*yield*/, redis_client_1.getResult(listString)];
             case 6:
                 result = _c.sent();

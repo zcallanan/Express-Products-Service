@@ -35,53 +35,57 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var fetch = require("node-fetch");
-var _a = require("../shared/redis-client.js"), getResult = _a.getResult, client = _a.client;
-var _b = require("../shared/constants.js"), MANUFACTURER_URL = _b.MANUFACTURER_URL, CACHE_TIMER = _b.CACHE_TIMER, TEST_CACHE_TIMER = _b.TEST_CACHE_TIMER, NODE_ENV = _b.NODE_ENV;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_fetch_1 = __importDefault(require("node-fetch"));
+var redis_client_1 = require("../shared/redis-client");
+var constants_1 = require("../shared/constants");
+var client = redis_client_1.getClient();
 // Get Manufacturer Availability
 var fetchManufacturerAvailability = function (manufacturer, product) { return __awaiter(void 0, void 0, void 0, function () {
-    var result, _a, _b, resValue, url, data, response, cache, err_1;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                _b = (_a = JSON).parse;
-                return [4 /*yield*/, getResult(manufacturer)];
+    var result, manufacturerData, resValue, url, data, response, cache, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, redis_client_1.getResult(manufacturer)];
             case 1:
-                result = _b.apply(_a, [_c.sent()]);
+                result = _a.sent();
+                manufacturerData = (result) ? JSON.parse(result) : undefined;
                 resValue = {};
-                if (!!result) return [3 /*break*/, 10];
+                if (!!manufacturerData) return [3 /*break*/, 10];
                 // No manufacturer data in hash, fetch it
-                console.log("Fetching data for", product, manufacturer, result);
-                url = "" + MANUFACTURER_URL + manufacturer;
+                console.log("Fetching data for", product, manufacturer);
+                url = "" + constants_1.MANUFACTURER_URL + manufacturer;
                 data = void 0;
-                _c.label = 2;
+                _a.label = 2;
             case 2:
-                _c.trys.push([2, 9, , 10]);
-                return [4 /*yield*/, fetch(url)];
+                _a.trys.push([2, 9, , 10]);
+                return [4 /*yield*/, node_fetch_1.default(url)];
             case 3:
-                response = _c.sent();
+                response = _a.sent();
                 return [4 /*yield*/, response.json()];
             case 4:
-                data = _c.sent();
+                data = _a.sent();
                 return [4 /*yield*/, Array.isArray(data.response)];
             case 5:
-                if (!((_c.sent()) && data.response.length)) return [3 /*break*/, 6];
+                if (!((_a.sent()) && data.response.length)) return [3 /*break*/, 6];
                 console.log(manufacturer + " data is valid");
                 // Save object to Redis as a hash
                 resValue[manufacturer] = data.response;
-                cache = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+                cache = constants_1.NODE_ENV === "test" ? constants_1.TEST_CACHE_TIMER : constants_1.CACHE_TIMER;
                 client.set(manufacturer, JSON.stringify(resValue), "EX", cache);
                 return [3 /*break*/, 8];
             case 6: return [4 /*yield*/, !Array.isArray(data.response)];
             case 7:
-                if (_c.sent()) {
+                if (_a.sent()) {
                     console.log("Failed, retrying for " + manufacturer + ", " + product + "!");
                     fetchManufacturerAvailability(manufacturer, product);
                 }
-                _c.label = 8;
+                _a.label = 8;
             case 8: return [3 /*break*/, 10];
             case 9:
-                err_1 = _c.sent();
+                err_1 = _a.sent();
                 console.log("Retrying for " + manufacturer + " - " + product, err_1);
                 fetchManufacturerAvailability(manufacturer, product);
                 return [3 /*break*/, 10];
@@ -89,4 +93,4 @@ var fetchManufacturerAvailability = function (manufacturer, product) { return __
         }
     });
 }); };
-module.exports = fetchManufacturerAvailability;
+exports.default = fetchManufacturerAvailability;

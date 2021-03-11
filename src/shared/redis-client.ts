@@ -17,12 +17,4 @@ const getResult = async (val: string): Promise<string | null> => {
   return await getAsync(val);
 };
 
-// const getRedisValue = async (key: string): Promise<StringList> => {
-//   const result = await getResult(key);
-//   if (result) {
-//     return JSON.parse(result);
-//   }
-// };
-
-// export { getRedisValue, getResult, getClient };
 export { getResult, getClient };

@@ -51,7 +51,7 @@ var subscriberInit = function () {
     var cache = constants_1.NODE_ENV === "test" ? constants_1.TEST_CACHE_TIMER : constants_1.CACHE_TIMER;
     // Redis subscriber to determine when to update availability column
     subscriber.on("pmessage", function (pattern, channel, message) { return __awaiter(void 0, void 0, void 0, function () {
-        var manufacturerResult, manufacturers_1, updateResult, updateReady;
+        var manufacturerResult, manufacturers_1, updateReady, updateResult;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -63,42 +63,45 @@ var subscriberInit = function () {
                         channel +
                         ": " +
                         message);
-                    if (!(channel === constants_1.KEY_EVENT_SET && !constants_1.IGNORE_LIST.includes(message))) return [3 /*break*/, 3];
+                    if (!(channel === constants_1.KEY_EVENT_SET)) return [3 /*break*/, 4];
                     return [4 /*yield*/, redis_client_1.getResult(listString)];
                 case 1:
                     manufacturerResult = _b.sent();
                     manufacturers_1 = manufacturerResult
                         ? JSON.parse(manufacturerResult)
                         : undefined;
+                    updateReady = void 0;
+                    if (!manufacturers_1) return [3 /*break*/, 4];
+                    if (!manufacturers_1[listString].includes(message)) return [3 /*break*/, 3];
                     return [4 /*yield*/, redis_client_1.getResult(updateString)];
                 case 2:
                     updateResult = _b.sent();
                     updateReady = updateResult
                         ? JSON.parse(updateResult)
                         : undefined;
-                    if (manufacturers_1) {
-                        if (manufacturers_1[listString].includes(message)) {
-                            if (!updateReady) {
-                                updateReady = (_a = {}, _a[updateString] = [message], _a);
-                                console.log("init updateReady:", updateReady);
-                            }
-                            else if (!updateReady[updateString].includes(message)) {
-                                updateReady[updateString].push(message);
-                                console.log("push", updateReady);
-                            }
-                            client.set(updateString, JSON.stringify(updateReady), "EX", cache);
-                        }
-                        if (updateReady) {
-                            if (message === updateString && updateReady[updateString].length === manufacturers_1[listString].length) {
-                                console.log("Update is a go", manufacturers_1[listString], updateReady[updateString]);
-                                constants_1.PRODUCT_LIST.forEach(function (product, index) {
-                                    return setTimeout(update_availability_1.default, 100 * index, manufacturers_1[listString], product);
-                                });
-                            }
+                    if (!updateReady) {
+                        updateReady = (_a = {}, _a[updateString] = [message], _a);
+                        console.log("init: updateReady:", updateReady);
+                    }
+                    if (updateReady && !updateReady[updateString].includes(message)) {
+                        updateReady[updateString].push(message);
+                        console.log("push:", updateReady);
+                    }
+                    client.set(updateString, JSON.stringify(updateReady), "EX", cache);
+                    _b.label = 3;
+                case 3:
+                    if (updateReady) {
+                        if (message === updateString &&
+                            updateReady[updateString].length ===
+                                manufacturers_1[listString].length) {
+                            console.log("Update is a go", manufacturers_1[listString], updateReady[updateString]);
+                            constants_1.PRODUCT_LIST.forEach(function (product, index) {
+                                return setTimeout(update_availability_1.default, 100 * index, manufacturers_1[listString], product);
+                            });
                         }
                     }
-                    _b.label = 3;
-                case 3: return [2 /*return*/];
+                    _b.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     }); });

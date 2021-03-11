@@ -28,6 +28,10 @@ type ManufacturerItem = {
 
 type ArrayManufacturerItem = Array<ManufacturerItem>;
 
+type ManufacturerObject = {
+  [key: string]: ArrayManufacturerItem
+};
+
 type ManufacturerResData = {
   id: string,
   DATAPAYLOAD: string
@@ -40,3 +44,5 @@ type ProductAPIRes = {
 type StringList =  {
   [key: string]: Array<string>,
 };
+
+type StringObj = { [key: string]: string }

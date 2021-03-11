@@ -16,7 +16,7 @@ import {
   juuranData,
   abiplosData,
   insertRes,
-} from "./data/insert-data.js";
+} from "./data/insert-data";
 import { deleteData, deleteRes } from "./data/delete-data";
 import {
   beaniesRes,
@@ -191,7 +191,7 @@ describe("DB actions should succeed", () => {
     // Insert a new value into DB
     await fetchProductData("beanies");
     // Give time for Insert/Update
-    await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 100));
+    await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 150));
     // Test response
     await request(app)
       .get("/")

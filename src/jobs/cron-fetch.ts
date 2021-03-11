@@ -1,11 +1,11 @@
-const cron = require("node-cron");
-const fetchProductData = require("../fetch/fetch-products.js");
-const {
+import cron from "node-cron";
+import fetchProductData from "../fetch/fetch-products";
+import {
   CRON_IN_MINUTES,
   START_CRON,
   END_CRON,
   PRODUCT_LIST,
-} = require("../shared/constants.js");
+} from "../shared/constants";
 
 const task = cron.schedule(
   `*/${CRON_IN_MINUTES} * * * *`,
@@ -19,7 +19,7 @@ const task = cron.schedule(
   }
 );
 
-const cronFetch = () => {
+const cronFetch = (): void => {
   if (START_CRON) {
     console.log("start cron");
     task.start();
@@ -30,4 +30,4 @@ const cronFetch = () => {
   }
 };
 
-module.exports = cronFetch;
+export default cronFetch;

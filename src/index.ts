@@ -1,13 +1,13 @@
 import express from "express";
 import cors from "cors";
-import getProductItems from "./api/get-product-items.js";
-import cronFetch from"./jobs/cron-fetch.js";
-import subscriberInit from "./shared/subscriber-init.js";
+import getProductItems from "./api/get-product-items";
+import cronFetch from"./jobs/cron-fetch";
+import subscriberInit from "./shared/subscriber-init";
 import {
   NODE_ENV,
   ACCESS_TOKEN_SECRET,
   PORT,
-} from "./shared/constants.js";
+} from "./shared/constants";
 
 const app = express();
 

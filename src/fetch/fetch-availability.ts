@@ -1,20 +1,25 @@
-const fetch = require("node-fetch");
-const { getResult, client } = require("../shared/redis-client.js");
-const {
+import fetch from "node-fetch";
+import { getResult, getClient } from "../shared/redis-client";
+import {
   MANUFACTURER_URL,
   CACHE_TIMER,
   TEST_CACHE_TIMER,
   NODE_ENV,
-} = require("../shared/constants.js");
+} from "../shared/constants";
+import { RedisClient } from "redis";
+
+ const client: RedisClient = getClient();
 
 // Get Manufacturer Availability
-const fetchManufacturerAvailability = async (manufacturer, product) => {
+const fetchManufacturerAvailability = async (manufacturer: string, product: string): Promise<void> => {
   // // Check if Redis has data for the manufacturer
-  let result = JSON.parse(await getResult(manufacturer));
-  let resValue = {};
-  if (!result) {
+  const result: string | null = await getResult(manufacturer);
+  // const result: string | null = await getResult(listString);
+  const manufacturerData: ArrayManufacturerItem | undefined = (result) ? JSON.parse(result) : undefined;
+  const resValue: Record<string, never> | ManufacturerObject = {};
+  if (!manufacturerData) {
     // No manufacturer data in hash, fetch it
-    console.log("Fetching data for", product, manufacturer, result);
+    console.log("Fetching data for", product, manufacturer);
     const url = `${MANUFACTURER_URL}${manufacturer}`; // Build URL
     let data;
 
@@ -27,7 +32,7 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
         console.log(`${manufacturer} data is valid`);
         // Save object to Redis as a hash
         resValue[manufacturer] = data.response;
-        const cache = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+        const cache: number = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
         client.set(manufacturer, JSON.stringify(resValue), "EX", cache);
       } else if (await !Array.isArray(data.response)) {
         console.log(`Failed, retrying for ${manufacturer}, ${product}!`);
@@ -40,4 +45,4 @@ const fetchManufacturerAvailability = async (manufacturer, product) => {
   }
 };
 
-module.exports = fetchManufacturerAvailability;
+export default fetchManufacturerAvailability;

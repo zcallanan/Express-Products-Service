@@ -57,8 +57,11 @@
     ],
     "preset": "ts-jest",
     "transform": {
-      "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
+      "node_modules/variables/.+\\.ts?$": "ts-jest"
     },
+    "testMatch": [
+    "**/tests/*.test.ts"
+  ],
     "transformIgnorePatterns": [
       "node_modules/(?!variables/.*)"
     ]

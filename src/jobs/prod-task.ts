@@ -1,6 +1,6 @@
-const fetchProductData = require("../fetch/fetch-products.js");
-const subscriberInit = require("../shared/subscriber-init.js");
-const { PRODUCT_LIST, TIMEOUT } = require("../shared/constants.js");
+import fetchProductData from "../fetch/fetch-products";
+import subscriberInit from "../shared/subscriber-init";
+import { PRODUCT_LIST, TIMEOUT } from "../shared/constants";
 
 subscriberInit();
 

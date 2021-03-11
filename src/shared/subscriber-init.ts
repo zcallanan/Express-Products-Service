@@ -32,46 +32,66 @@ const subscriberInit = (): RedisClient => {
         message
     );
 
-    if (channel === KEY_EVENT_SET && !IGNORE_LIST.includes(message)) {
-      const manufacturerResult: string | null = await getResult(listString);
-      const manufacturers: StringList | undefined = manufacturerResult
-        ? JSON.parse(manufacturerResult)
-        : undefined;
+    if (channel === KEY_EVENT_SET && !IGNORE_LIST.includes(message)) { // Something is set
+      // Check update-ready
       const updateResult: string | null = await getResult(updateString);
       let updateReady: StringList | undefined = updateResult
         ? JSON.parse(updateResult)
         : undefined;
+      const manufacturerResult: string | null = await getResult(listString);
+      const manufacturers: StringList | undefined = manufacturerResult
+        ? JSON.parse(manufacturerResult)
+        : undefined;
+
+      // Create update-ready
+      if (!updateReady) {
+        console.log("Initialize updateReady");
+        updateReady = { [updateString]: [] };
+        client.set(updateString, JSON.stringify(updateReady), "EX", cache);
+      } else if (
+        manufacturers &&
+        message === updateString &&
+        updateReady[updateString].length === manufacturers[listString].length
+      ) {
+        // Call update availability for all products
+        console.log(
+          "Update is a go",
+          manufacturers[listString],
+          updateReady[updateString]
+        );
+        PRODUCT_LIST.forEach(function (product, index) {
+          return setTimeout(
+            updateAvailability,
+            100 * index,
+            manufacturers[listString],
+            product
+          );
+        });
+      }
+
       if (manufacturers) {
+        // Push message to update-ready hash
         if (manufacturers[listString].includes(message)) {
-          if (!updateReady) {
-            updateReady = { [updateString]: [message] };
-            console.log("init updateReady:", updateReady);
-          } else if (!updateReady[updateString].includes(message)) {
-            updateReady[updateString].push(message);
-            console.log("push", updateReady);
-          }
+          console.log("Push", message);
+          updateReady[updateString].push(message);
           client.set(updateString, JSON.stringify(updateReady), "EX", cache);
-        }
-        if (updateReady) {
-          if (
-            message === updateString &&
-            updateReady[updateString].length ===
-              manufacturers[listString].length
-          ) {
-            console.log(
-              "Update is a go",
-              manufacturers[listString],
-              updateReady[updateString]
-            );
-            PRODUCT_LIST.forEach((product, index) =>
-              setTimeout(
-                updateAvailability,
-                100 * index,
-                manufacturers[listString],
-                product
-              )
-            );
-          }
+          manufacturers[listString].forEach((manufacturer) => {
+            if (manufacturer !== message) {
+              // Push other manufacturers to hash
+              const manResult = getResult(manufacturer);
+              manResult.then((x) => {
+                if (x && updateReady) {
+                  updateReady[updateString].push(manufacturer);
+                  client.set(
+                    updateString,
+                    JSON.stringify(updateReady),
+                    "EX",
+                    cache
+                  );
+                }
+              });
+            }
+          });
         }
       }
     }

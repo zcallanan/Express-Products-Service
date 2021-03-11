@@ -49,7 +49,7 @@ var constants_1 = require("../shared/constants");
 var setup_jest_1 = require("./config/setup-jest");
 var fetch_products_1 = __importDefault(require("../fetch/fetch-products"));
 var subscriber_init_1 = __importDefault(require("../shared/subscriber-init"));
-var insert_data_js_1 = require("./data/insert-data.js");
+var insert_data_1 = require("./data/insert-data");
 var delete_data_1 = require("./data/delete-data");
 var product_data_1 = require("./data/product-data");
 var update_data_1 = require("./data/update-data");
@@ -283,12 +283,12 @@ describe("GET product data should succeed", function () {
     }); });
 });
 describe("DB actions should succeed", function () {
-    test("INSERT data, UPDATE product availability", function () { return __awaiter(void 0, void 0, void 0, function () {
+    test.only("INSERT data, UPDATE product availability", function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     // Product data by default has no availability set, so an update is required as part of this test
-                    fetchMock.mockResponses([JSON.stringify(insert_data_js_1.insertData), { status: 200 }], [JSON.stringify(insert_data_js_1.ippalData), { status: 200 }], [JSON.stringify(insert_data_js_1.juuranData), { status: 200 }], [JSON.stringify(insert_data_js_1.abiplosData), { status: 200 }]);
+                    fetchMock.mockResponses([JSON.stringify(insert_data_1.insertData), { status: 200 }], [JSON.stringify(insert_data_1.ippalData), { status: 200 }], [JSON.stringify(insert_data_1.juuranData), { status: 200 }], [JSON.stringify(insert_data_1.abiplosData), { status: 200 }]);
                     // Flush Redis
                     client.flushall();
                     // Insert a new value into DB
@@ -311,7 +311,7 @@ describe("DB actions should succeed", function () {
                         })
                             .expect("Content-Type", /json/)
                             .expect(200)
-                            .expect(insert_data_js_1.insertRes)];
+                            .expect(insert_data_1.insertRes)];
                 case 3:
                     // Test response
                     _a.sent();
@@ -328,7 +328,7 @@ describe("DB actions should succeed", function () {
                     return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(function () { return resolve("Done"); }, 100); })];
                 case 2:
                     _a.sent();
-                    fetchMock.mockResponses([JSON.stringify(delete_data_1.deleteData), { status: 200 }], [JSON.stringify(insert_data_js_1.ippalData), { status: 200 }]);
+                    fetchMock.mockResponses([JSON.stringify(delete_data_1.deleteData), { status: 200 }], [JSON.stringify(insert_data_1.ippalData), { status: 200 }]);
                     // Insert a new value into DB
                     return [4 /*yield*/, fetch_products_1.default("beanies")];
                 case 3:
