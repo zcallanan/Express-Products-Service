@@ -1,3 +1,5 @@
+import { ArrayProductItemProcessed, ProductAPIRes } from "../../types";
+
 // getProduct array data
 const beaniesData: ArrayProductItemProcessed = [
   {

@@ -13,6 +13,7 @@ import redis from "redis";
 import { RedisClient } from "redis";
 const subscriber: RedisClient = redis.createClient({ url: REDIS_URL });
 const client: RedisClient = getClient();
+import { StringList } from "../types";
 
 const subscriberInit = (): RedisClient => {
   const listString: string =

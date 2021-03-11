@@ -7,6 +7,7 @@ import {
   NODE_ENV,
 } from "../shared/constants";
 import { RedisClient } from "redis";
+import { ArrayManufacturerItem, ManufacturerObject } from "../types";
 
  const client: RedisClient = getClient();
 

@@ -2,7 +2,7 @@ import { enableFetchMocks } from 'jest-fetch-mock'
 enableFetchMocks();
 
 import http from "http";
-import app from "../index";
+import { app } from "../index";
 import request from "supertest";
 import { getClient } from "../shared/redis-client";
 import { ACCESS_TOKEN_SECRET } from "../shared/constants";

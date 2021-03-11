@@ -50,4 +50,4 @@ app.get("/", (req: express.Request, res: express.Response) => {
   getProductItems(req, res);
 });
 
-export default app;
+export { app, express };

@@ -1,6 +1,7 @@
 import query from "./query";
 import format from "pg-format";
 import { QueryResult } from "pg";
+import { StringList, ProductItemProcessed } from "../types";
 
 const updateProduct = async (
   product: string,
@@ -23,13 +24,9 @@ const updateProduct = async (
     );
     const recordValues: QueryResult = await query(updateSelect);
     // Split to get each column value
-    const array: Array<string> = recordValues.rows[0].row.split(",");
+    const array: string[] = recordValues.rows[0].row.split(",");
 
-    type UpdateObject = {
-      array: Array<string>;
-    };
-
-    const updateObject: UpdateObject = {
+    const updateObject: StringList = {
       array: [],
     };
 

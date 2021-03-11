@@ -2,9 +2,10 @@ import query from "./query";
 import format from "pg-format";
 import { getResult } from "../shared/redis-client";
 import { QueryResult } from "pg";
+import { ArrayManufacturerItem } from "../types";
 
 const updateAvailability = async (
-  manufacturers: Array<string>,
+  manufacturers: string[],
   product: string
 ): Promise<QueryResult> => {
   // Keep DB in sync with latest API fetch

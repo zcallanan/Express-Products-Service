@@ -1,7 +1,9 @@
 import createResponse from "../../shared/create-response";
+import { ArrayProductItemRaw, ProductAPIRes, ManufacturerItem } from "../../types";
+
 
 // FetchMock data for db insertion
-const insertData: ArrayProductItemRaw = [
+export const insertData: ArrayProductItemRaw = [
   {
     id: "0016516931359f9277205a0f",
     name: "ILLEAKOL METROPOLIS STAR",
@@ -29,12 +31,12 @@ const insertData: ArrayProductItemRaw = [
 ];
 
 // Insert response to be tested
-const insertRes: ProductAPIRes = {
+export const insertRes: ProductAPIRes = {
   beanies: createResponse(insertData, "In Stock", "Out of Stock"),
 };
 
 // Fetchmock manufacturer availability data
-const ippalData: ManufacturerItem = {
+export const ippalData: ManufacturerItem = {
   code: 200,
   response: [
     {
@@ -45,7 +47,7 @@ const ippalData: ManufacturerItem = {
   ],
 };
 
-const juuranData: ManufacturerItem = {
+export const juuranData: ManufacturerItem = {
   code: 200,
   response: [
     {
@@ -56,7 +58,7 @@ const juuranData: ManufacturerItem = {
   ],
 };
 
-const abiplosData: ManufacturerItem = {
+export const abiplosData: ManufacturerItem = {
   code: 200,
   response: [
     {
@@ -65,12 +67,4 @@ const abiplosData: ManufacturerItem = {
         "<AVAILABILITY>\n  <CODE>200</CODE>\n  <INSTOCKVALUE>OUTOFSTOCK</INSTOCKVALUE>\n</AVAILABILITY>",
     },
   ],
-};
-
-export {
-  insertData,
-  ippalData,
-  juuranData,
-  abiplosData,
-  insertRes,
 };

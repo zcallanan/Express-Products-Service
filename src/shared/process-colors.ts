@@ -1,4 +1,4 @@
-const processColors = (colorArray: Array<string>): string => {
+const processColors = (colorArray: string[]): string => {
   let colors= "";
   if (colorArray.length > 1) {
     colorArray.forEach((color, index) => {

@@ -2,6 +2,7 @@ import query from "./query";
 import updateProduct from"../db/update-product";
 import format from "pg-format";
 import { QueryResult } from 'pg';
+import { ProductItemProcessed } from "../types";
 
 const insertProduct = async (product: string, item: ProductItemProcessed, colors: string): Promise<QueryResult> => {
   try {

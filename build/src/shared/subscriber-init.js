@@ -51,7 +51,7 @@ var subscriberInit = function () {
     var cache = constants_1.NODE_ENV === "test" ? constants_1.TEST_CACHE_TIMER : constants_1.CACHE_TIMER;
     // Redis subscriber to determine when to update availability column
     subscriber.on("pmessage", function (pattern, channel, message) { return __awaiter(void 0, void 0, void 0, function () {
-        var manufacturerResult, manufacturers_1, updateReady, updateResult;
+        var updateResult, updateReady_1, manufacturerResult, manufacturers_1;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -63,45 +63,56 @@ var subscriberInit = function () {
                         channel +
                         ": " +
                         message);
-                    if (!(channel === constants_1.KEY_EVENT_SET)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, redis_client_1.getResult(listString)];
+                    if (!(channel === constants_1.KEY_EVENT_SET && !constants_1.IGNORE_LIST.includes(message))) return [3 /*break*/, 3];
+                    return [4 /*yield*/, redis_client_1.getResult(updateString)];
                 case 1:
+                    updateResult = _b.sent();
+                    updateReady_1 = updateResult
+                        ? JSON.parse(updateResult)
+                        : undefined;
+                    return [4 /*yield*/, redis_client_1.getResult(listString)];
+                case 2:
                     manufacturerResult = _b.sent();
                     manufacturers_1 = manufacturerResult
                         ? JSON.parse(manufacturerResult)
                         : undefined;
-                    updateReady = void 0;
-                    if (!manufacturers_1) return [3 /*break*/, 4];
-                    if (!manufacturers_1[listString].includes(message)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, redis_client_1.getResult(updateString)];
-                case 2:
-                    updateResult = _b.sent();
-                    updateReady = updateResult
-                        ? JSON.parse(updateResult)
-                        : undefined;
-                    if (!updateReady) {
-                        updateReady = (_a = {}, _a[updateString] = [message], _a);
-                        console.log("init: updateReady:", updateReady);
+                    // Create update-ready
+                    if (!updateReady_1) {
+                        console.log("Initialize updateReady");
+                        updateReady_1 = (_a = {}, _a[updateString] = [], _a);
+                        client.set(updateString, JSON.stringify(updateReady_1), "EX", cache);
                     }
-                    if (updateReady && !updateReady[updateString].includes(message)) {
-                        updateReady[updateString].push(message);
-                        console.log("push:", updateReady);
+                    else if (manufacturers_1 &&
+                        message === updateString &&
+                        updateReady_1[updateString].length === manufacturers_1[listString].length) {
+                        // Call update availability for all products
+                        console.log("Update is a go", manufacturers_1[listString], updateReady_1[updateString]);
+                        constants_1.PRODUCT_LIST.forEach(function (product, index) {
+                            return setTimeout(update_availability_1.default, 100 * index, manufacturers_1[listString], product);
+                        });
                     }
-                    client.set(updateString, JSON.stringify(updateReady), "EX", cache);
-                    _b.label = 3;
-                case 3:
-                    if (updateReady) {
-                        if (message === updateString &&
-                            updateReady[updateString].length ===
-                                manufacturers_1[listString].length) {
-                            console.log("Update is a go", manufacturers_1[listString], updateReady[updateString]);
-                            constants_1.PRODUCT_LIST.forEach(function (product, index) {
-                                return setTimeout(update_availability_1.default, 100 * index, manufacturers_1[listString], product);
+                    if (manufacturers_1) {
+                        // Push message to update-ready hash
+                        if (manufacturers_1[listString].includes(message)) {
+                            console.log("Push", message);
+                            updateReady_1[updateString].push(message);
+                            client.set(updateString, JSON.stringify(updateReady_1), "EX", cache);
+                            manufacturers_1[listString].forEach(function (manufacturer) {
+                                if (manufacturer !== message) {
+                                    // Push other manufacturers to hash
+                                    var manResult = redis_client_1.getResult(manufacturer);
+                                    manResult.then(function (x) {
+                                        if (x && updateReady_1) {
+                                            updateReady_1[updateString].push(manufacturer);
+                                            client.set(updateString, JSON.stringify(updateReady_1), "EX", cache);
+                                        }
+                                    });
+                                }
                             });
                         }
                     }
-                    _b.label = 4;
-                case 4: return [2 /*return*/];
+                    _b.label = 3;
+                case 3: return [2 /*return*/];
             }
         });
     }); });

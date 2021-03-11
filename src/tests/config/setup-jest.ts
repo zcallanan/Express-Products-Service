@@ -7,6 +7,8 @@ import {
   facemasksData,
   glovesData,
 } from "../data/product-data";
+import { ProductItemProcessed } from "../../types";
+
 let truncateQuery: string;
 let insertQuery: string;
 

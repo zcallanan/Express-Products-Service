@@ -1,5 +1,6 @@
 import query from "../db/query";
 import format from "pg-format";
+// import { express } from "../index";
 import {
   PRODUCT_LIST,
   CACHE_TIMER,
@@ -12,11 +13,16 @@ import {
 } from "../shared/redis-client";
 import { RedisClient } from "redis";
 import { QueryResult } from 'pg';
+import { ProductItemObject } from "../types";
 
-const getProductItems = async (req, res) => {
+const getProductItems = async (req, res): Promise<void> => {
   const client: RedisClient = getClient();
   try {
-    const productReq: string = req.header("X-PRODUCT");
+    // let productReq: string;
+    // if (req.header("X-PRODUCT")) {
+    const productReq = req.header("X-PRODUCT");
+    // }
+
     // Handle nonexistent product requests
     let product: string | undefined = PRODUCT_LIST.includes(productReq) ? productReq : undefined;
 
@@ -31,7 +37,7 @@ const getProductItems = async (req, res) => {
         NODE_ENV === "test"
           ? await getResult(`${product}_test`)
           : await getResult(product);
-      const productData: ArrayProductItemRaw | undefined = (result) ? JSON.parse(result) : undefined;
+      const productData: ProductItemObject | undefined = (result) ? JSON.parse(result) : undefined;
 
       let resValue = {};
 
@@ -55,16 +61,11 @@ const getProductItems = async (req, res) => {
       } else {
         // If there is a hash
         if (NODE_ENV === "test") {
-          // Rename key
-          let rename;
-          if (product === "beanies" && product) {
-            rename = ({ [product!]: beanies_test }: StringObj) => ({ beanies_test });
-          } else if (product === "facemasks") {
-            rename = ({ [product!]: facemasks_test }: StringObj) => ({ facemasks_test });
-          } else if (product === "gloves") {
-            rename = ({ [product!]: gloves_test }: StringObj) => ({ gloves_test });
-          }
-          resValue = rename(productData);
+          resValue = Object.keys(productData).reduce((acc, curr) => {
+            acc[`${curr}_test`] = productData[curr];
+            return acc;
+          }, {});
+
         } else {
           resValue = productData;
         }

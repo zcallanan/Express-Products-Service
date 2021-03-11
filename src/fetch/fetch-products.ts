@@ -6,19 +6,19 @@ import { getResult, getClient } from"../shared/redis-client";
 import { RedisClient } from "redis";
 import { QueryResult } from 'pg';
 import processColors from "../shared/process-colors";
-
 import {
   PRODUCT_URL,
   CACHE_TIMER,
   TEST_CACHE_TIMER,
   NODE_ENV,
 } from "../shared/constants";
+import { StringList } from "../types";
 
 const client: RedisClient = getClient();
 
 const fetchProductData = async (product: string): Promise<QueryResult> => {
-  const productIDs: Array<string> = [];
-  const manufacturers: Array<string> = [];
+  const productIDs: string[] = [];
+  const manufacturers: string[] = [];
 
   const url = `${PRODUCT_URL}${product}`; // Build URL
   let data;

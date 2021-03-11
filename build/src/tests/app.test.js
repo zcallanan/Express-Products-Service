@@ -283,7 +283,7 @@ describe("GET product data should succeed", function () {
     }); });
 });
 describe("DB actions should succeed", function () {
-    test.only("INSERT data, UPDATE product availability", function () { return __awaiter(void 0, void 0, void 0, function () {
+    test("INSERT data, UPDATE product availability", function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -297,7 +297,7 @@ describe("DB actions should succeed", function () {
                     // Insert a new value into DB
                     _a.sent();
                     // Give time for Insert/Update
-                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(function () { return resolve("Done"); }, 100); })];
+                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(function () { return resolve("Done"); }, 150); })];
                 case 2:
                     // Give time for Insert/Update
                     _a.sent();
