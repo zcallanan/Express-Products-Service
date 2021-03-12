@@ -1,7 +1,7 @@
 import createResponse from "../../shared/create-response";
-import { ArrayProductItemRaw, ProductAPIRes, ManufacturerItem } from "../../types";
+import { ProductItemRaw, ProductAPIRes, ManAPIRes } from "../../types";
 
-const updateData: ArrayProductItemRaw = [
+const updateData: ProductItemRaw[] = [
   {
     id: "01fe877cbe49cd19a45a",
     name: "OOTGINKOL ANIMAL UPDATED",
@@ -20,7 +20,7 @@ const updateData: ArrayProductItemRaw = [
   },
 ];
 
-const hennexData: ManufacturerItem = {
+const hennexData: ManAPIRes = {
   code: 200,
   response: [
     {
@@ -31,7 +31,7 @@ const hennexData: ManufacturerItem = {
   ],
 };
 
-const abiFData: ManufacturerItem = {
+const abiFData: ManAPIRes = {
   code: 200,
   response: [
     {

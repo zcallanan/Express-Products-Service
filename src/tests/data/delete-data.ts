@@ -1,7 +1,7 @@
 import createResponse from "../../shared/create-response";
-import { ArrayProductItemRaw, ProductAPIRes } from "../../types";
+import { ProductItemRaw, ProductAPIRes } from "../../types";
 
-const deleteData: ArrayProductItemRaw = [
+const deleteData: ProductItemRaw[] = [
   {
     id: "0016516931359f9277205a0f",
     name: "ILLEAKOL METROPOLIS STAR",

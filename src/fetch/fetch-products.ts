@@ -2,9 +2,9 @@ import fetch from "node-fetch";
 import fetchManufacturerAvailability from "./fetch-availability";
 import insertProduct from "../db/insert-product";
 import deleteProduct from "../db/delete-product";
-import { getResult, getClient } from"../shared/redis-client";
+import { getResult, getClient } from "../shared/redis-client";
 import { RedisClient } from "redis";
-import { QueryResult } from 'pg';
+import { QueryResult } from "pg";
 import processColors from "../shared/process-colors";
 import {
   PRODUCT_URL,
@@ -12,7 +12,7 @@ import {
   TEST_CACHE_TIMER,
   NODE_ENV,
 } from "../shared/constants";
-import { StringList } from "../types";
+import { StringList, ProductItemRaw } from "../types";
 
 const client: RedisClient = getClient();
 
@@ -21,7 +21,7 @@ const fetchProductData = async (product: string): Promise<QueryResult> => {
   const manufacturers: string[] = [];
 
   const url = `${PRODUCT_URL}${product}`; // Build URL
-  let data;
+  let data: ProductItemRaw[];
   try {
     // Try to get the data
     const response = await fetch(url);
@@ -54,9 +54,12 @@ const fetchProductData = async (product: string): Promise<QueryResult> => {
       const listString: string =
         NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
 
-      const cache: number = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+      const cache: number =
+        NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
       const result: string | null = await getResult(listString);
-      let manufacturersFetched: StringList | undefined = (result) ? JSON.parse(result) : undefined;
+      let manufacturersFetched: StringList | undefined = result
+        ? JSON.parse(result)
+        : undefined;
 
       for (const manufacturer of manufacturers) {
         if (!manufacturersFetched) {
@@ -87,7 +90,7 @@ const fetchProductData = async (product: string): Promise<QueryResult> => {
           );
         }
       }
-    } else if (await !Array.isArray(data.response)) {
+    } else if (await !Array.isArray(data)) {
       // Make the request again
       console.log(`failed to fetch ${product} try again!`);
       fetchProductData(product);

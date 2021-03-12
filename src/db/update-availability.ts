@@ -2,7 +2,7 @@ import query from "./query";
 import format from "pg-format";
 import { getResult } from "../shared/redis-client";
 import { QueryResult } from "pg";
-import { ArrayManufacturerItem } from "../types";
+import { ManAPIRes } from "../types";
 
 const updateAvailability = async (
   manufacturers: string[],
@@ -25,7 +25,7 @@ const updateAvailability = async (
 
     for (const manufacturer of manufacturers) {
       const result: string | null = await getResult(manufacturer);
-      const manufacturerData: ArrayManufacturerItem | undefined = result
+      const manufacturerData: ManAPIRes[] | undefined = result
         ? JSON.parse(result)
         : undefined;
       if (manufacturerData) {

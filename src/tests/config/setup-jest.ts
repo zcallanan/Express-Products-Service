@@ -2,11 +2,7 @@
 import query from "../../db/query";
 import format from "pg-format";
 import { PRODUCT_LIST, NODE_ENV } from "../../shared/constants";
-import {
-  beaniesData,
-  facemasksData,
-  glovesData,
-} from "../data/product-data";
+import { beaniesData, facemasksData, glovesData } from "../data/product-data";
 import { ProductItemProcessed } from "../../types";
 
 let truncateQuery: string;

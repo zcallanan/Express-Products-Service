@@ -2,11 +2,11 @@ import query from "./query";
 import updateProduct from "../db/update-product";
 import format from "pg-format";
 import { QueryResult } from "pg";
-import { ProductItemProcessed } from "../types";
+import { ProductItemRaw } from "../types";
 
 const insertProduct = async (
   product: string,
-  item: ProductItemProcessed,
+  item: ProductItemRaw,
   colors: string
 ): Promise<QueryResult> => {
   try {

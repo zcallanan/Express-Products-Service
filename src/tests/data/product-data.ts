@@ -1,7 +1,7 @@
-import { ArrayProductItemProcessed, ProductAPIRes } from "../../types";
+import { ProductItemProcessed, ProductAPIRes } from "../../types";
 
 // getProduct array data
-const beaniesData: ArrayProductItemProcessed = [
+const beaniesData: ProductItemProcessed[] = [
   {
     id: "0016516931359f9277205a0f",
     name: "ILLEAKOL METROPOLIS STAR",
@@ -22,7 +22,7 @@ const beaniesData: ArrayProductItemProcessed = [
   },
 ];
 
-const facemasksData: ArrayProductItemProcessed = [
+const facemasksData: ProductItemProcessed[] = [
   {
     id: "01fe877cbe49cd19a45a",
     name: "OOTGINKOL ANIMAL FANTASY",
@@ -43,7 +43,7 @@ const facemasksData: ArrayProductItemProcessed = [
   },
 ];
 
-const glovesData: ArrayProductItemProcessed = [
+const glovesData: ProductItemProcessed[] = [
   {
     id: "001ffc6816f71dbdc0d59",
     name: "SOPIL BOON",

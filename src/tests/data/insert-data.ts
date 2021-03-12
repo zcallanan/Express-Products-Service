@@ -1,9 +1,9 @@
 import createResponse from "../../shared/create-response";
-import { ArrayProductItemRaw, ProductAPIRes, ManufacturerItem } from "../../types";
+import { ProductItemRaw, ProductAPIRes, ManAPIRes } from "../../types";
 
 
 // FetchMock data for db insertion
-export const insertData: ArrayProductItemRaw = [
+export const insertData: ProductItemRaw[] = [
   {
     id: "0016516931359f9277205a0f",
     name: "ILLEAKOL METROPOLIS STAR",
@@ -36,7 +36,7 @@ export const insertRes: ProductAPIRes = {
 };
 
 // Fetchmock manufacturer availability data
-export const ippalData: ManufacturerItem = {
+export const ippalData: ManAPIRes = {
   code: 200,
   response: [
     {
@@ -47,7 +47,7 @@ export const ippalData: ManufacturerItem = {
   ],
 };
 
-export const juuranData: ManufacturerItem = {
+export const juuranData: ManAPIRes = {
   code: 200,
   response: [
     {
@@ -58,7 +58,7 @@ export const juuranData: ManufacturerItem = {
   ],
 };
 
-export const abiplosData: ManufacturerItem = {
+export const abiplosData: ManAPIRes = {
   code: 200,
   response: [
     {

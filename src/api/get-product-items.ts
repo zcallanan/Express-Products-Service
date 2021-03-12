@@ -10,7 +10,7 @@ import {
 import { getResult, getClient } from "../shared/redis-client";
 import { RedisClient } from "redis";
 import { QueryResult } from "pg";
-import { ProductItemObject } from "../types";
+import { ProductRedisHash } from "../types";
 
 const getProductItems = async (
   req: express.Request,
@@ -35,7 +35,7 @@ const getProductItems = async (
         NODE_ENV === "test"
           ? await getResult(`${product}_test`)
           : await getResult(product);
-      const productData: ProductItemObject | undefined = result
+      const productData: ProductRedisHash | undefined = result
         ? JSON.parse(result)
         : undefined;
 

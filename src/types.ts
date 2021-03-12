@@ -1,3 +1,13 @@
+/*
+getProduct API
+*/
+
+// JSON API object for testing
+export type ProductAPIRes = {
+  [key: string]: ProductItemProcessed[];
+};
+
+// getProduct API item data for testing
 export type ProductItemProcessed = {
   id: string;
   type: string;
@@ -8,8 +18,11 @@ export type ProductItemProcessed = {
   availability?: string;
 };
 
-export type ArrayProductItemProcessed = ProductItemProcessed[];
+/*
+Third Party Product API
+*/
 
+// Product data API content
 export type ProductItemRaw = {
   id: string;
   name: string;
@@ -19,34 +32,39 @@ export type ProductItemRaw = {
   price: number;
 };
 
-export type ArrayProductItemRaw = ProductItemRaw[];
+/*
+Third Party Manufacturer API
+*/
 
-export type ProductItemObject = {
-  [key: string]: ArrayProductItemRaw;
-};
-
-export type ManufacturerItem = {
+// Manufacturer availability API
+export type ManAPIRes = {
   code: number;
-  response: ManufacturerResData[];
+  response: ManIdPayload[];
 };
 
-export type ArrayManufacturerItem = ManufacturerItem[];
-
-export type ManufacturerObject = {
-  [key: string]: ArrayManufacturerItem;
-};
-
-export type ManufacturerResData = {
+// Manufacturer response data object
+export type ManIdPayload = {
   id: string;
   DATAPAYLOAD: string;
 };
 
-export type ProductAPIRes = {
-  [key: string]: ArrayProductItemProcessed;
+/*
+Redis
+*/
+
+export type ProductRedisHash = {
+  [key: string]: ProductItemRaw[];
 };
 
+export type ManRedisHash = {
+  [key: string]: ManIdPayload[];
+};
+
+/*
+Generic
+*/
+
+// { key: Array<string> }
 export type StringList = {
   [key: string]: string[];
 };
-
-export type StringObj = { [key: string]: string };

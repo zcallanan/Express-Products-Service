@@ -1,16 +1,15 @@
 // Convert fetchMock data to getProduct API response format
 import processColors from "./process-colors";
 import {
-  ArrayProductItemRaw,
-  ArrayProductItemProcessed,
+  ProductItemRaw,
   ProductItemProcessed,
 } from "../types";
 
 const createResponse = (
-  array: ArrayProductItemRaw,
+  array: ProductItemRaw[],
   val: string,
   val_two: string
-): ArrayProductItemProcessed => {
+): ProductItemProcessed[] => {
   return array.map(({ ...item }, index) => {
     // Create a copy or TypeScript complains
     const copy: ProductItemProcessed = {
