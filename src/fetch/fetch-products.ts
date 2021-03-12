@@ -4,7 +4,6 @@ import insertProduct from "../db/insert-product";
 import deleteProduct from "../db/delete-product";
 import { getResult, getClient } from "../shared/redis-client";
 import { RedisClient } from "redis";
-import { QueryResult } from "pg";
 import processColors from "../shared/process-colors";
 import {
   PRODUCT_URL,
@@ -31,7 +30,7 @@ const fetchProductData = async (product: string): Promise<void> => {
       deleteProduct(product, productIDs);
 
       await data.forEach((item) => {
-        // Build manufacturers array
+        // Build manufacturers array for this product
         if (!manufacturers.includes(item.manufacturer))
           NODE_ENV === "test"
             ? manufacturers.push(`${item.manufacturer}_test`)
@@ -54,31 +53,47 @@ const fetchProductData = async (product: string): Promise<void> => {
       const cache: number =
         NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
 
+      // Check for Redis manufacturer list
+      const result: string | null = await getResult(listString);
+      const manRedis: StringList | undefined = result
+        ? JSON.parse(result)
+        : undefined;
+
+      // Create an object to track manufacturer data fetched
       const array: string[] = [];
       const manufacturersFetched: StringList = { [listString]: array };
 
+      if (manRedis) {
+        // If a manufacturer is in manRedis list, its data has already been fetched by a preceding product fetch
+        manufacturersFetched[listString] = [...manRedis[listString]];
+      }
+
       for (const manufacturer of manufacturers) {
+        // For each manufacturer found in this product's data
         if (!manufacturersFetched[listString].includes(manufacturer)) {
+          // If that manufacturer has not previously been fetched
           console.log(
             "Calling to fetch",
             manufacturersFetched[listString],
             "does not include",
             manufacturer
           );
+          // Fetch data for that manufacturer
           fetchManufacturerAvailability(manufacturer, product);
+          // Then add it to the list of manufacturer's data fetched
           manufacturersFetched[listString].push(manufacturer);
+        }
 
-          // Save manufacturer list to Redis
-          if (manufacturersFetched[listString].length === manufacturers.length) {
-            client.set(
-              listString,
-              JSON.stringify({
-                [listString]: manufacturersFetched[listString],
-              }),
-              "EX",
-              cache
-            );
-          }
+        // Once all manufacturers of this product, and preceding products, has been fetched, set list to Redis
+        if (manufacturersFetched[listString].length === manufacturers.length) {
+          client.set(
+            listString,
+            JSON.stringify({
+              [listString]: manufacturersFetched[listString],
+            }),
+            "EX",
+            cache
+          );
         }
       }
     } else if (await !Array.isArray(data)) {
@@ -87,6 +102,7 @@ const fetchProductData = async (product: string): Promise<void> => {
       fetchProductData(product);
     }
   } catch (err) {
+    // Product JSON data malformed, request again
     fetchProductData(product);
   }
 };

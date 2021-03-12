@@ -14,10 +14,11 @@ const fetchManufacturerAvailability = async (
   manufacturer: string,
   product: string
 ): Promise<void> => {
+  console.log("fetchManufacturerAvailability for:", manufacturer, product)
   // // Check if Redis has data for the manufacturer
   const client: RedisClient = await getClient();
   const result: string | null = await getResult(manufacturer);
-  // const result: string | null = await getResult(listString);
+
   const manufacturerData: ManAPIRes[] | undefined = result
     ? JSON.parse(result)
     : undefined;
