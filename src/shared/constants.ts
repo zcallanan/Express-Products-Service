@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 
-if (process.env.NODE_ENV !== "production") dotenv.config();
-
 export const NODE_ENV: string | undefined = process.env.NODE_ENV;
+if (NODE_ENV !== "production") dotenv.config();
 
 // Server
 export const ACCESS_TOKEN_SECRET: string | undefined =

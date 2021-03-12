@@ -13,8 +13,6 @@ const subscriber: RedisClient = redis.createClient({ url: REDIS_URL });
 import { StringList } from "../types";
 
 const subscriberInit = async (): Promise<RedisClient> => {
-  let callOnce = 1;
-  // let createOnce = 1;
   const listString: string =
     NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
   const updateString: string =
@@ -45,7 +43,6 @@ const subscriberInit = async (): Promise<RedisClient> => {
       }
       if (
         manufacturers &&
-        callOnce &&
         updateReady[updateString].length === manufacturers[listString].length
       ) {
         console.log(
@@ -54,7 +51,6 @@ const subscriberInit = async (): Promise<RedisClient> => {
           ":",
           manufacturers[listString]
         );
-        callOnce = 0;
         // Give time for Insertion
         await new Promise<string>((resolve) =>
           setTimeout(() => resolve("Done"), 100)
