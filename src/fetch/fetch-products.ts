@@ -53,20 +53,12 @@ const fetchProductData = async (product: string): Promise<void> => {
 
       const cache: number =
         NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
-      const result: string | null = await getResult(listString);
-      let manufacturersFetched: StringList | undefined = result
-        ? JSON.parse(result)
-        : undefined;
+
+      const array: string[] = [];
+      const manufacturersFetched: StringList = { [listString]: array };
 
       for (const manufacturer of manufacturers) {
-        if (!manufacturersFetched) {
-          manufacturersFetched = {
-            [listString]: [],
-          };
-          console.log("init", manufacturersFetched);
-        }
         if (!manufacturersFetched[listString].includes(manufacturer)) {
-          // IF not in Redis, fetch it
           console.log(
             "Calling to fetch",
             manufacturersFetched[listString],
@@ -74,17 +66,19 @@ const fetchProductData = async (product: string): Promise<void> => {
             manufacturer
           );
           fetchManufacturerAvailability(manufacturer, product);
-
-          // Save manufacturer to Redis
           manufacturersFetched[listString].push(manufacturer);
-          client.set(
-            listString,
-            JSON.stringify({
-              [listString]: manufacturersFetched[listString],
-            }),
-            "EX",
-            cache
-          );
+
+          // Save manufacturer list to Redis
+          if (manufacturersFetched[listString].length === manufacturers.length) {
+            client.set(
+              listString,
+              JSON.stringify({
+                [listString]: manufacturersFetched[listString],
+              }),
+              "EX",
+              cache
+            );
+          }
         }
       }
     } else if (await !Array.isArray(data)) {
