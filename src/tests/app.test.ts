@@ -33,33 +33,31 @@ import {
   abiFData,
 } from "./data/update-data";
 
-const client: RedisClient = getClient();
 const server = http.createServer(app);
 server.listen(3020);
 
 let subscriber: RedisClient;
+let client: RedisClient;
 
-const reset = async (): Promise<number> => {
+const reset = async (): Promise<void> => {
   await truncTables();
   await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 500));
   await insertRows();
   await client.flushall();
-  return 1;
 };
 
-beforeAll(async (): Promise<number> => {
+beforeAll(async (): Promise<void> => {
   subscriber = await subscriberInit();
+  client = await getClient();
   await reset();
-  return 1;
 });
 
-afterAll(async (): Promise<number> => {
+afterAll(async (): Promise<void> => {
   await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 500));
   await client.quit();
   await subscriber.quit();
   await server.close();
   await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 500));
-  return 1;
 });
 
 describe("GET product data should fail", () => {

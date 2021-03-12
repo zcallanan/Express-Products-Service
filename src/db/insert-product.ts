@@ -8,7 +8,7 @@ const insertProduct = async (
   product: string,
   item: ProductItemRaw,
   colors: string
-): Promise<QueryResult> => {
+): Promise<void> => {
   try {
     // Check status
     const insertSelect: string = format(
@@ -18,8 +18,7 @@ const insertProduct = async (
       item.id
     );
     const result: QueryResult = await query(insertSelect);
-    // If it does not exist, insert
-
+    // If it does not exist in db, insert
     if (!result.rows[0].exists) {
       const insertQuery: string = format(
         "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
@@ -46,7 +45,7 @@ const insertProduct = async (
       updateProduct(product, item, colors);
     }
   } catch (err) {
-    console.log(err);
+    console.log("Unable to insert", product, item, err);
   }
 };
 

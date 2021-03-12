@@ -16,7 +16,7 @@ const getProductItems = async (
   req: express.Request,
   res: express.Response
 ): Promise<void> => {
-  const client: RedisClient = getClient();
+  const client: RedisClient = await getClient();
   try {
     const productReq: string = req.header("X-PRODUCT") ?? "";
 
@@ -25,12 +25,12 @@ const getProductItems = async (
       : undefined;
 
     if (!product) {
+      // API request for nonexistent product
       res
         .status(404)
         .send(`The requested product ${productReq} does not exist.`);
     } else if (product) {
-      // Get product's stored hash if available
-      // const result: string | null = await getResult(listString);
+      // API request for known product. Get product's stored hash if available
       const result: string | null =
         NODE_ENV === "test"
           ? await getResult(`${product}_test`)
@@ -39,11 +39,11 @@ const getProductItems = async (
         ? JSON.parse(result)
         : undefined;
 
-      let resValue = {};
+      let resValue: Record<string, never> | ProductRedisHash = {};
 
       if (!productData) {
-        const id = "id";
         // If no stored hash, get it from the DB
+        const id = "id";
         const queryString: string = format(
           "SELECT * FROM %I ORDER BY %I",
           product,
@@ -64,21 +64,26 @@ const getProductItems = async (
         // Save object to redis as a hash
         client.set(product, JSON.stringify(resValue), "EX", cache);
       } else {
-        // If there is a hash
+        // API response
         if (NODE_ENV === "test") {
+          // Change response key for testing
           resValue = Object.keys(productData).reduce((acc, curr) => {
             acc[`${curr}_test`] = productData[curr];
             return acc;
           }, {});
         } else {
+          // Dev & Prod response value
           resValue = productData;
         }
       }
+      // API response as JSON
       res.json(resValue);
     }
   } catch (err) {
-    console.log("getProduct failed!");
-    console.log(err);
+    console.log("getProduct failed!", err);
+    res
+        .status(404)
+        .send(`The requested product data could not be found.`);
   }
 };
 

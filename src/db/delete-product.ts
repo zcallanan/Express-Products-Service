@@ -5,7 +5,7 @@ import { QueryResult } from "pg";
 const deleteProduct = async (
   product: string,
   productIDs: string[]
-): Promise<QueryResult> => {
+): Promise<void> => {
   // Keep DB in sync with latest API fetch
   try {
     const deleteSelect: string = format("SELECT %I FROM %I", "id", product);
@@ -23,7 +23,7 @@ const deleteProduct = async (
       }
     });
   } catch (err) {
-    console.log(err);
+    console.log("Failed to delete", product, err);
   }
 };
 

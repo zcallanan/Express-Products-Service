@@ -7,7 +7,7 @@ import { ManAPIRes } from "../types";
 const updateAvailability = async (
   manufacturers: string[],
   product: string
-): Promise<QueryResult> => {
+): Promise<void> => {
   // Keep DB in sync with latest API fetch
   try {
     const productsQuery: string = format(
@@ -66,7 +66,7 @@ const updateAvailability = async (
     }
     console.log(`Total availability updates for ${product}: ${i}`);
   } catch (err) {
-    console.log(err);
+    console.log("Failed to update availability for", product, err);
   }
 };
 

@@ -1,28 +1,21 @@
 import { Pool, QueryResult } from "pg";
-import dotenv from "dotenv";
-import { NODE_ENV } from "../shared/constants";
+import { NODE_ENV, DB_NAME, USER, HOST, PASSWORD, DATABASE_URL } from "../shared/constants";
 
 let pool: Pool;
 
 if (NODE_ENV !== "production") {
-  dotenv.config();
-
-  const dbName: string | undefined =
-    NODE_ENV === "test"
-      ? process.env.DATABASE_NAME_TEST
-      : process.env.DATABASE_NAME;
 
   // Use local DB
   pool = new Pool({
-    user: process.env.USER,
-    host: process.env.HOST,
-    database: dbName,
-    password: process.env.PASSWORD,
+    user: USER,
+    host: HOST,
+    database: DB_NAME,
+    password: PASSWORD,
   });
 } else {
   // Use production DB
   pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: DATABASE_URL,
     ssl: {
       rejectUnauthorized: false,
     },

@@ -7,7 +7,7 @@ const updateProduct = async (
   product: string,
   item: ProductItemRaw,
   colors: string
-): Promise<QueryResult> => {
+): Promise<void> => {
   try {
     const updateSelect: string = format(
       "SELECT (%I, %I, %I, %I, %I) \
@@ -79,7 +79,7 @@ const updateProduct = async (
       query(updateQuery);
     }
   } catch (err) {
-    console.log(err);
+    console.log("Failed to update", product, item, err);
   }
 };
 

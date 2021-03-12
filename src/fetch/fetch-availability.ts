@@ -9,14 +9,13 @@ import {
 import { RedisClient } from "redis";
 import { ManRedisHash, ManAPIRes } from "../types";
 
-const client: RedisClient = getClient();
-
 // Get Manufacturer Availability
 const fetchManufacturerAvailability = async (
   manufacturer: string,
   product: string
 ): Promise<void> => {
   // // Check if Redis has data for the manufacturer
+  const client: RedisClient = await getClient();
   const result: string | null = await getResult(manufacturer);
   // const result: string | null = await getResult(listString);
   const manufacturerData: ManAPIRes[] | undefined = result
@@ -26,7 +25,7 @@ const fetchManufacturerAvailability = async (
   if (!manufacturerData) {
     // No manufacturer data in hash, fetch it
     console.log("Fetching data for", product, manufacturer);
-    const url = `${MANUFACTURER_URL}${manufacturer}`; // Build URL
+    const url = `${MANUFACTURER_URL}${manufacturer}`;
     let data: ManAPIRes;
 
     try {
@@ -42,10 +41,12 @@ const fetchManufacturerAvailability = async (
           NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
         client.set(manufacturer, JSON.stringify(resValue), "EX", cache);
       } else if (await !Array.isArray(data.response)) {
+        // Response is not an array, try again
         console.log(`Failed, retrying for ${manufacturer}, ${product}!`);
         fetchManufacturerAvailability(manufacturer, product);
       }
     } catch (err) {
+      // Bad JSON, an error was thrown, try again
       console.log(`Retrying for ${manufacturer} - ${product}`, err);
       fetchManufacturerAvailability(manufacturer, product);
     }

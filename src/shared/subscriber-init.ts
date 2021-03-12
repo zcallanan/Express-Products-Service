@@ -12,7 +12,7 @@ import { RedisClient } from "redis";
 const subscriber: RedisClient = redis.createClient({ url: REDIS_URL });
 import { StringList } from "../types";
 
-const subscriberInit = (): RedisClient => {
+const subscriberInit = async (): Promise<RedisClient> => {
   let callOnce = 1;
   // let createOnce = 1;
   const listString: string =

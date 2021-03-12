@@ -14,13 +14,12 @@ import {
 } from "../shared/constants";
 import { StringList, ProductItemRaw } from "../types";
 
-const client: RedisClient = getClient();
-
-const fetchProductData = async (product: string): Promise<QueryResult> => {
+const fetchProductData = async (product: string): Promise<void> => {
+  const client: RedisClient = await getClient();
   const productIDs: string[] = [];
   const manufacturers: string[] = [];
 
-  const url = `${PRODUCT_URL}${product}`; // Build URL
+  const url = `${PRODUCT_URL}${product}`;
   let data: ProductItemRaw[];
   try {
     // Try to get the data
@@ -28,9 +27,7 @@ const fetchProductData = async (product: string): Promise<QueryResult> => {
     data = await response.json();
 
     if ((await Array.isArray(data)) && data.length) {
-      // If response is an array and has length
-
-      // Keep DB in sync with latest API call by deleting records
+      // Delete records missing from Product API response
       deleteProduct(product, productIDs);
 
       await data.forEach((item) => {
@@ -46,7 +43,7 @@ const fetchProductData = async (product: string): Promise<QueryResult> => {
         // Process colors
         const colors: string = processColors(item.color);
 
-        // Test if an ID exists in the product's DB, insert else update
+        // Test if an ID exists in the product's DB, insert else check for update
         insertProduct(product, item, colors);
       });
 
