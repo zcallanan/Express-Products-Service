@@ -23,7 +23,6 @@ const updateAvailability = async (
     let availability: string;
     let i = 0;
 
-    // for (const manufacturer of manufacturers) {
     manufacturers.forEach((manufacturer) => {
       const promiseResult: Promise<string | null> = getResult(manufacturer);
       promiseResult.then((result) => {
