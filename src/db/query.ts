@@ -1,10 +1,15 @@
 import { Pool, QueryResult } from "pg";
-import { NODE_ENV, DB_NAME, USER_DEV, HOST, PASSWORD, DATABASE_URL } from "../shared/constants";
+import {
+  NODE_ENV,
+  DB_NAME,
+  USER_DEV,
+  HOST, PASSWORD,
+  DATABASE_URL,
+} from "../shared/constants";
 
 let pool: Pool;
 
 if (NODE_ENV !== "production") {
-
   // Use local DB
   pool = new Pool({
     user: USER_DEV,
@@ -28,8 +33,7 @@ const query = async (text: string): Promise<QueryResult> => {
     const res = await pool.query(text);
     const duration = Date.now() - start;
     const today: Date = new Date();
-    const time: string =
-      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
     console.log(time, "- executed query", {
       text,
       duration,
@@ -37,7 +41,8 @@ const query = async (text: string): Promise<QueryResult> => {
     });
     return res;
   } catch (err) {
-    console.log(err);
+    console.log("Query failed", err);
+    return new Promise<void>((resolve) => resolve());
   }
 };
 

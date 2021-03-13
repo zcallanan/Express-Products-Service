@@ -1,13 +1,13 @@
-import query from "./query";
-import updateProduct from "../db/update-product";
 import format from "pg-format";
 import { QueryResult } from "pg";
+import query from "./query";
+import updateProduct from "./update-product";
 import { ProductItemRaw } from "../types";
 
 const insertProduct = async (
   product: string,
   item: ProductItemRaw,
-  colors: string
+  colors: string,
 ): Promise<void> => {
   try {
     // Check status
@@ -15,14 +15,13 @@ const insertProduct = async (
       "SELECT EXISTS(SELECT 1 FROM %I WHERE %I = %L)",
       product,
       "id",
-      item.id
+      item.id,
     );
     const result: QueryResult = await query(insertSelect);
     // If it does not exist in db, insert
     if (!result.rows[0].exists) {
       const insertQuery: string = format(
-        "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
-        VALUES (%L, %L, %L, %L, %L, %L, %L)",
+        "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) VALUES (%L, %L, %L, %L, %L, %L, %L)",
         product,
         "id",
         "type",
@@ -37,7 +36,7 @@ const insertProduct = async (
         colors,
         item.price,
         item.manufacturer,
-        "Availability Unknown"
+        "Availability Unknown",
       );
       query(insertQuery);
     } else {

@@ -34,7 +34,7 @@ const insert = (product: string, item: ProductItemProcessed): void => {
     item.color,
     item.price,
     item.manufacturer,
-    item.availability
+    item.availability,
   );
   query(insertQuery);
 };

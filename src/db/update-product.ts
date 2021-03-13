@@ -1,18 +1,16 @@
-import query from "./query";
 import format from "pg-format";
 import { QueryResult } from "pg";
+import query from "./query";
 import { StringList, ProductItemRaw } from "../types";
 
 const updateProduct = async (
   product: string,
   item: ProductItemRaw,
-  colors: string
+  colors: string,
 ): Promise<void> => {
   try {
     const updateSelect: string = format(
-      "SELECT (%I, %I, %I, %I, %I) \
-      FROM %I \
-      WHERE %I = %L",
+      "SELECT (%I, %I, %I, %I, %I) FROM %I WHERE %I = %L",
       "type",
       "name",
       "color",
@@ -20,7 +18,7 @@ const updateProduct = async (
       "manufacturer",
       product,
       "id",
-      item.id
+      item.id,
     );
     const recordValues: QueryResult = await query(updateSelect);
     // Split to get each column value
@@ -44,7 +42,7 @@ const updateProduct = async (
     let recordColors: string = array[2].replace(/["]+/g, "");
     if (array.length === 6) {
       // If there are two colors
-      recordColors = recordColors + "," + array[3].replace(/["]+/g, "");
+      recordColors = `${recordColors}, ${array[3].replace(/["]+/g, "")}`;
     }
     if (colors !== recordColors) {
       // Update color in DB
@@ -62,19 +60,19 @@ const updateProduct = async (
       const cond5: string = format(
         "%I = %L",
         "manufacturer",
-        item.manufacturer
+        item.manufacturer,
       );
       updateObject.array.push(cond5);
     }
 
     if (updateObject.array.length) {
-      const cond_string: string = updateObject.array.join(", ");
+      const condString: string = updateObject.array.join(", ");
       const updateQuery: string = format(
         "UPDATE %I SET %s WHERE %I = %L",
         product,
-        cond_string,
+        condString,
         "id",
-        item.id
+        item.id,
       );
       query(updateQuery);
     }
