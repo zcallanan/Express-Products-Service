@@ -32,7 +32,7 @@ const subscriberInit = async (): Promise<redis.RedisClient> => {
     if (channel === KEY_EVENT_SET && !IGNORE_LIST.includes(message)) {
       if (!updateReady[updateString].includes(message)) {
         updateReady[updateString].push(message);
-        console.log("Pushed", message, updateReady[updateString]);
+        console.log(`Pushed" ${message}: ${updateReady[updateString]}`);
       }
       if (
         manufacturers
@@ -42,14 +42,12 @@ const subscriberInit = async (): Promise<redis.RedisClient> => {
         // Give time for Insertion
         await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 100));
 
-        PRODUCT_LIST.forEach((product, index) =>
-          setTimeout(
-            updateAvailability,
-            50 * index,
-            manufacturers[listString],
-            product
-          )
-        );
+        PRODUCT_LIST.forEach((product, index) => setTimeout(
+          updateAvailability,
+          50 * index,
+          manufacturers[listString],
+          product,
+        ));
       }
     }
   });
