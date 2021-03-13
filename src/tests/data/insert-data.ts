@@ -1,7 +1,6 @@
 import createResponse from "../../shared/create-response";
 import { ProductItemRaw, ProductAPIRes, ManAPIRes } from "../../types";
 
-
 // FetchMock data for db insertion
 export const insertData: ProductItemRaw[] = [
   {

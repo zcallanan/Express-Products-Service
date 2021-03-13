@@ -1,12 +1,12 @@
-import query from "./query";
-import format from "pg-format";
-import { getResult } from "../shared/redis-client";
 import { QueryResult } from "pg";
+import format from "pg-format";
+import query from "./query";
+import { getResult } from "../shared/redis-client";
 import { ManAPIRes } from "../types";
 
 const updateAvailability = async (
   manufacturers: string[],
-  product: string
+  product: string,
 ): Promise<void> => {
   // Keep DB in sync with latest API fetch
   try {
@@ -14,7 +14,7 @@ const updateAvailability = async (
       "SELECT %I, %I FROM %I",
       "id",
       "availability",
-      product
+      product,
     );
 
     const tableIDs: QueryResult = await query(productsQuery);
@@ -49,14 +49,14 @@ const updateAvailability = async (
 
             // If API response's availability differs from what is in the DB
             if (availability !== tableIDs.rows[ind].availability) {
-              i++;
+              i += 1;
               const availabilityUpdate: string = format(
                 "UPDATE %I SET %I = %L WHERE %I = %L",
                 product,
                 "availability",
                 availability,
                 "id",
-                value.id.toLowerCase()
+                value.id.toLowerCase(),
               );
               query(availabilityUpdate);
             }

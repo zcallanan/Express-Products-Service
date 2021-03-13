@@ -46,4 +46,9 @@ const updateRes: ProductAPIRes = {
   facemasks: createResponse(updateData, "Less Than 10", "Out of Stock"),
 };
 
-export { updateData, updateRes, hennexData, abiFData };
+export {
+  updateData,
+  updateRes,
+  hennexData,
+  abiFData,
+};

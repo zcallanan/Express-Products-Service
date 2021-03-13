@@ -1,6 +1,6 @@
 // Setup db reset
-import query from "../../db/query";
 import format from "pg-format";
+import query from "../../db/query";
 import { PRODUCT_LIST, NODE_ENV } from "../../shared/constants";
 import { beaniesData, facemasksData, glovesData } from "../data/product-data";
 import { ProductItemProcessed } from "../../types";
@@ -19,8 +19,7 @@ const truncTables = (): void => {
 
 const insert = (product: string, item: ProductItemProcessed): void => {
   insertQuery = format(
-    "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) \
-      VALUES (%L, %L, %L, %L, %L, %L, %L)",
+    "INSERT INTO %I (%I, %I, %I, %I, %I, %I, %I) VALUES (%L, %L, %L, %L, %L, %L, %L)",
     product,
     "id",
     "type",

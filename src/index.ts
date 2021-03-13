@@ -11,10 +11,9 @@ const app = express();
 const port = NODE_ENV === "test" ? 3020 : PORT;
 app.set("port", port);
 
-if (NODE_ENV !== "test")
-  app.listen(app.get("port"), () => {
-    console.log("Server listening on port " + app.get("port"));
-  });
+if (NODE_ENV !== "test") {
+  app.listen(app.get("port"), () => console.log(`Listening on port ${app.get("port")}`));
+}
 
 // Handle CORS
 app.use(cors());
@@ -35,13 +34,13 @@ app.get(
     if (!token) {
       return res
         .status(401)
-        .send("Proper authorization credentials were not provided."); // If there isn't any token
-    } else if (token !== ACCESS_TOKEN_SECRET) {
-      return res.status(403).send("Invalid authentication credentials."); // If wrong token
-    } else {
-      next();
+        .send("Proper authorization credentials were not provided."); // If there is no token
     }
-  }
+    if (token !== ACCESS_TOKEN_SECRET) {
+      return res.status(403).send("Invalid authentication credentials."); // If wrong token
+    }
+    return next();
+  },
 );
 
 // Return custom API response from DB

@@ -1,17 +1,12 @@
+import redis from "redis";
 import { promisify } from "util";
 import { REDIS_URL } from "./constants";
-import redis from "redis";
-import { RedisClient } from "redis";
 
-const client: RedisClient = redis.createClient({ url: REDIS_URL });
+const client: redis.RedisClient = redis.createClient({ url: REDIS_URL });
 client.on("error", (error) => console.error(error));
-const getClient = async (): Promise<RedisClient> => {
-  return client;
-};
+const getClient = async (): Promise<redis.RedisClient> => client;
 
 const getAsync = promisify(client.get).bind(client);
-const getResult = async (val: string): Promise<string | null> => {
-  return await getAsync(val);
-};
+const getResult = async (val: string): Promise<string | null> => getAsync(val);
 
 export { getResult, getClient };

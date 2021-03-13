@@ -1,9 +1,9 @@
 import fetch from "node-fetch";
+import { RedisClient } from "redis";
 import fetchManufacturerAvailability from "./fetch-availability";
 import insertProduct from "../db/insert-product";
 import deleteProduct from "../db/delete-product";
 import { getResult, getClient } from "../shared/redis-client";
-import { RedisClient } from "redis";
 import processColors from "../shared/process-colors";
 import {
   PRODUCT_URL,
@@ -31,10 +31,12 @@ const fetchProductData = async (product: string): Promise<void> => {
 
       await data.forEach((item) => {
         // Build manufacturers array for this product
-        if (!manufacturers.includes(item.manufacturer))
-          NODE_ENV === "test"
-            ? manufacturers.push(`${item.manufacturer}_test`)
-            : manufacturers.push(item.manufacturer);
+        if (!manufacturers.includes(item.manufacturer)) {
+          const manValue: string = (NODE_ENV === "test")
+            ? `${item.manufacturer}_test`
+            : item.manufacturer;
+          manufacturers.push(manValue);
+        }
 
         // Build an array of product IDs
         productIDs.push(item.id);
@@ -47,11 +49,13 @@ const fetchProductData = async (product: string): Promise<void> => {
       });
 
       // Get availability data
-      const listString: string =
-        NODE_ENV === "test" ? "manufacturer-list_test" : "manufacturer-list";
+      const listString: string = (NODE_ENV === "test")
+        ? "manufacturer-list_test"
+        : "manufacturer-list";
 
-      const cache: number =
-        NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+      const cache: number = (NODE_ENV === "test")
+        ? TEST_CACHE_TIMER
+        : CACHE_TIMER;
 
       // Check for Redis manufacturer list
       const result: string | null = await getResult(listString);
@@ -64,11 +68,11 @@ const fetchProductData = async (product: string): Promise<void> => {
       const manufacturersFetched: StringList = { [listString]: array };
 
       if (manRedis) {
-        // If a manufacturer is in manRedis list, its data has already been fetched by a preceding product fetch
+        // Some data has already been fetched by a preceding product fetch
         manufacturersFetched[listString] = [...manRedis[listString]];
       }
 
-      for (const manufacturer of manufacturers) {
+      manufacturers.forEach((manufacturer) => {
         // For each manufacturer found in this product's data
         if (!manufacturersFetched[listString].includes(manufacturer)) {
           // If that manufacturer has not previously been fetched
@@ -76,7 +80,7 @@ const fetchProductData = async (product: string): Promise<void> => {
             "Calling to fetch",
             manufacturersFetched[listString],
             "does not include",
-            manufacturer
+            manufacturer,
           );
           // Fetch data for that manufacturer
           fetchManufacturerAvailability(manufacturer, product);
@@ -84,7 +88,7 @@ const fetchProductData = async (product: string): Promise<void> => {
           manufacturersFetched[listString].push(manufacturer);
         }
 
-        // Once all manufacturers of this product, and preceding products, has been fetched, set list to Redis
+        // Once all manufacturers of this product have been fetched, set list to Redis
         if (manufacturersFetched[listString].length === manufacturers.length) {
           client.set(
             listString,
@@ -92,10 +96,10 @@ const fetchProductData = async (product: string): Promise<void> => {
               [listString]: manufacturersFetched[listString],
             }),
             "EX",
-            cache
+            cache,
           );
         }
-      }
+      });
     } else if (await !Array.isArray(data)) {
       // Make the request again
       console.log(`failed to fetch ${product} try again!`);

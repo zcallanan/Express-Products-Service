@@ -10,13 +10,10 @@ import {
 const task = cron.schedule(
   `*/${CRON_IN_MINUTES} * * * *`,
   () => {
-    PRODUCT_LIST.forEach((product, index) =>
-      setTimeout(fetchProductData, 5000 * index, product)
-    );
-  },
-  {
+    PRODUCT_LIST.forEach((product, index) => setTimeout(fetchProductData, 5000 * index, product));
+  }, {
     scheduled: false,
-  }
+  },
 );
 
 const cronFetch = (): void => {

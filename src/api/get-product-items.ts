@@ -1,6 +1,8 @@
-import query from "../db/query";
+import { Request, Response } from "express";
 import format from "pg-format";
-import { express } from "../index";
+import { RedisClient } from "redis";
+import { QueryResult } from "pg";
+import query from "../db/query";
 import {
   PRODUCT_LIST,
   CACHE_TIMER,
@@ -8,13 +10,11 @@ import {
   NODE_ENV,
 } from "../shared/constants";
 import { getResult, getClient } from "../shared/redis-client";
-import { RedisClient } from "redis";
-import { QueryResult } from "pg";
 import { ProductRedisHash } from "../types";
 
 const getProductItems = async (
-  req: express.Request,
-  res: express.Response
+  req: Request,
+  res: Response,
 ): Promise<void> => {
   const client: RedisClient = await getClient();
   try {

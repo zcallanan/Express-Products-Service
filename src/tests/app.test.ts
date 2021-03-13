@@ -1,15 +1,14 @@
-import { enableFetchMocks } from 'jest-fetch-mock'
-enableFetchMocks();
-
+import { enableFetchMocks } from "jest-fetch-mock";
+enableFetchMocks(); // This must come before other imports or things break
 import http from "http";
-import { app } from "../index";
 import request from "supertest";
+import { RedisClient } from "redis";
+import { app } from "../index";
 import { getClient } from "../shared/redis-client";
 import { ACCESS_TOKEN_SECRET } from "../shared/constants";
 import { truncTables, insertRows } from "./config/setup-jest";
 import fetchProductData from "../fetch/fetch-products";
 import subscriberInit from "../shared/subscriber-init";
-import { RedisClient } from "redis";
 import {
   insertData,
   ippalData,
@@ -177,12 +176,12 @@ describe("GET product data should succeed", () => {
 
 describe("DB actions should succeed", () => {
   test("INSERT data, UPDATE product availability", async () => {
-    // Product data by default has no availability set, so an update is required as part of this test
+    // Product data by default has no availability set, so an update is required
     fetchMock.mockResponses(
       [JSON.stringify(insertData), { status: 200 }],
       [JSON.stringify(ippalData), { status: 200 }],
       [JSON.stringify(juuranData), { status: 200 }],
-      [JSON.stringify(abiplosData), { status: 200 }]
+      [JSON.stringify(abiplosData), { status: 200 }],
     );
     // Flush Redis
     client.flushall();
@@ -208,7 +207,7 @@ describe("DB actions should succeed", () => {
     await new Promise<string>((resolve) => setTimeout(() => resolve("Done"), 100));
     fetchMock.mockResponses(
       [JSON.stringify(deleteData), { status: 200 }],
-      [JSON.stringify(ippalData), { status: 200 }]
+      [JSON.stringify(ippalData), { status: 200 }],
     );
     // Insert a new value into DB
     await fetchProductData("beanies");
@@ -233,7 +232,7 @@ describe("DB actions should succeed", () => {
     fetchMock.mockResponses(
       [JSON.stringify(updateData), { status: 200 }],
       [JSON.stringify(hennexData), { status: 200 }],
-      [JSON.stringify(abiFData), { status: 200 }]
+      [JSON.stringify(abiFData), { status: 200 }],
     );
     // Update values
     await fetchProductData("facemasks");

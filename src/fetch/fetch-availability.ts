@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { RedisClient } from "redis";
 import { getResult, getClient } from "../shared/redis-client";
 import {
   MANUFACTURER_URL,
@@ -6,15 +7,13 @@ import {
   TEST_CACHE_TIMER,
   NODE_ENV,
 } from "../shared/constants";
-import { RedisClient } from "redis";
 import { ManRedisHash, ManAPIRes } from "../types";
 
 // Get Manufacturer Availability
 const fetchManufacturerAvailability = async (
   manufacturer: string,
-  product: string
+  product: string,
 ): Promise<void> => {
-  console.log("fetchManufacturerAvailability for:", manufacturer, product)
   // // Check if Redis has data for the manufacturer
   const client: RedisClient = await getClient();
   const result: string | null = await getResult(manufacturer);
@@ -38,8 +37,8 @@ const fetchManufacturerAvailability = async (
         console.log(`${manufacturer} data is valid`);
         // Save object to Redis as a hash
         resValue[manufacturer] = data.response;
-        const cache: number =
-          NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+        const cache: number = NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+
         client.set(manufacturer, JSON.stringify(resValue), "EX", cache);
       } else if (await !Array.isArray(data.response)) {
         // Response is not an array, try again

@@ -1,5 +1,5 @@
 import { Pool, QueryResult } from "pg";
-import { NODE_ENV, DB_NAME, USER, HOST, PASSWORD, DATABASE_URL } from "../shared/constants";
+import { NODE_ENV, DB_NAME, USER_DEV, HOST, PASSWORD, DATABASE_URL } from "../shared/constants";
 
 let pool: Pool;
 
@@ -7,7 +7,7 @@ if (NODE_ENV !== "production") {
 
   // Use local DB
   pool = new Pool({
-    user: USER,
+    user: USER_DEV,
     host: HOST,
     database: DB_NAME,
     password: PASSWORD,
