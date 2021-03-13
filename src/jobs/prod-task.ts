@@ -4,9 +4,7 @@ import { PRODUCT_LIST, TIMEOUT } from "../shared/constants";
 
 subscriberInit();
 
-PRODUCT_LIST.forEach((product, index) =>
-  setTimeout(fetchProductData, 5000 * index, product)
-);
+PRODUCT_LIST.forEach((product, index) => setTimeout(fetchProductData, 5000 * index, product));
 
 // Kill script if it hasn't killed itself
 setTimeout(() => {

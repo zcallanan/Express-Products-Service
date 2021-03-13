@@ -1,13 +1,13 @@
 const processColors = (colorArray: string[]): string => {
   let colors = "";
   if (colorArray.length > 1) {
+    // Multiple color string
     colorArray.forEach((color, index) => {
-      colorArray.length - 1 === index
-        ? (colors += `${color}`)
-        : (colors += `${color}, `);
+      colors += (colorArray.length - 1 === index) ? `${color}` : `${color}, `;
     });
   } else {
-    colors = colorArray[0];
+    // One color string
+    [colors] = colorArray;
   }
   return colors;
 };

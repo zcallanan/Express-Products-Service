@@ -1,10 +1,10 @@
-import query from "./query";
 import format from "pg-format";
 import { QueryResult } from "pg";
+import query from "./query";
 
 const deleteProduct = async (
   product: string,
-  productIDs: string[]
+  productIDs: string[],
 ): Promise<void> => {
   // Keep DB in sync with latest API fetch
   try {
@@ -17,7 +17,7 @@ const deleteProduct = async (
           "DELETE FROM %I WHERE %I = %L",
           product,
           "id",
-          row.id
+          row.id,
         );
         query(deleteQuery);
       }

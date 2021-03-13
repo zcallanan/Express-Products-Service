@@ -1,6 +1,8 @@
-import query from "../db/query";
+import { Request, Response } from "express";
 import format from "pg-format";
-import { express } from "../index";
+import { RedisClient } from "redis";
+import { QueryResult } from "pg";
+import query from "../db/query";
 import {
   PRODUCT_LIST,
   CACHE_TIMER,
@@ -8,13 +10,11 @@ import {
   NODE_ENV,
 } from "../shared/constants";
 import { getResult, getClient } from "../shared/redis-client";
-import { RedisClient } from "redis";
-import { QueryResult } from "pg";
 import { ProductRedisHash } from "../types";
 
 const getProductItems = async (
-  req: express.Request,
-  res: express.Response
+  req: Request,
+  res: Response,
 ): Promise<void> => {
   const client: RedisClient = await getClient();
   try {
@@ -31,10 +31,9 @@ const getProductItems = async (
         .send(`The requested product ${productReq} does not exist.`);
     } else if (product) {
       // API request for known product. Get product's stored hash if available
-      const result: string | null =
-        NODE_ENV === "test"
-          ? await getResult(`${product}_test`)
-          : await getResult(product);
+      const result: string | null = NODE_ENV === "test"
+        ? await getResult(`${product}_test`)
+        : await getResult(product);
       const productData: ProductRedisHash | undefined = result
         ? JSON.parse(result)
         : undefined;
@@ -47,7 +46,7 @@ const getProductItems = async (
         const queryString: string = format(
           "SELECT * FROM %I ORDER BY %I",
           product,
-          id
+          id,
         );
 
         const productQuery: QueryResult = await query(queryString);
@@ -55,26 +54,24 @@ const getProductItems = async (
         resValue[product] = productQuery.rows;
 
         // Handle different cache timers
-        const cache: number =
-          NODE_ENV === "test" ? TEST_CACHE_TIMER : CACHE_TIMER;
+        const cache: number = NODE_ENV === "test"
+          ? TEST_CACHE_TIMER
+          : CACHE_TIMER;
 
         // Add _test to product
         if (NODE_ENV === "test") product = `${product}_test`;
 
         // Save object to redis as a hash
         client.set(product, JSON.stringify(resValue), "EX", cache);
+      } else if (NODE_ENV === "test") {
+        // Change response key for testing
+        resValue = Object.keys(productData).reduce((acc, curr) => {
+          acc[`${curr}_test`] = productData[curr];
+          return acc;
+        }, {});
       } else {
-        // API response
-        if (NODE_ENV === "test") {
-          // Change response key for testing
-          resValue = Object.keys(productData).reduce((acc, curr) => {
-            acc[`${curr}_test`] = productData[curr];
-            return acc;
-          }, {});
-        } else {
-          // Dev & Prod response value
-          resValue = productData;
-        }
+        // Dev & Prod response value
+        resValue = productData;
       }
       // API response as JSON
       res.json(resValue);
@@ -82,8 +79,8 @@ const getProductItems = async (
   } catch (err) {
     console.log("getProduct failed!", err);
     res
-        .status(404)
-        .send(`The requested product data could not be found.`);
+      .status(404)
+      .send("The requested product data could not be found.");
   }
 };
 
