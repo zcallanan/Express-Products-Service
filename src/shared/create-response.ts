@@ -10,22 +10,21 @@ const createResponse = (
   val: string,
   val_two: string,
 ): ProductItemProcessed[] => {
+  const copy: ProductItemProcessed = {
+    id: "",
+    type: "",
+    name: "",
+    color: "",
+    manufacturer: "",
+    price: 0,
+  };
   return array.map(({ ...item }, index) => {
     // Create a copy or TypeScript complains
-    const copy: ProductItemProcessed = {
-      id: "",
-      type: "",
-      name: "",
-      color: "",
-      manufacturer: "",
-      price: 0,
-    };
-
     Object.assign(copy, item);
     copy.availability = (index === 0) ? val : val_two;
     copy.color = processColors(item.color);
-    return copy;
-  });
+    return { ...copy };
+  }, copy);
 };
 
 export default createResponse;

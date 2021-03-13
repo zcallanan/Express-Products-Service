@@ -1,14 +1,25 @@
 import { enableFetchMocks } from "jest-fetch-mock";
-enableFetchMocks(); // This must come before other imports or things break
+
+enableFetchMocks(); // eslint complains, but must come before other imports
+// eslint-disable-next-line import/first
 import http from "http";
+// eslint-disable-next-line import/first
 import request from "supertest";
+// eslint-disable-next-line import/first
 import { RedisClient } from "redis";
+// eslint-disable-next-line import/first
 import { app } from "../index";
+// eslint-disable-next-line import/first
 import { getClient } from "../shared/redis-client";
+// eslint-disable-next-line import/first
 import { ACCESS_TOKEN_SECRET } from "../shared/constants";
+// eslint-disable-next-line import/first
 import { truncTables, insertRows } from "./config/setup-jest";
+// eslint-disable-next-line import/first
 import fetchProductData from "../fetch/fetch-products";
+// eslint-disable-next-line import/first
 import subscriberInit from "../shared/subscriber-init";
+// eslint-disable-next-line import/first
 import {
   insertData,
   ippalData,
@@ -16,7 +27,9 @@ import {
   abiplosData,
   insertRes,
 } from "./data/insert-data";
+// eslint-disable-next-line import/first
 import { deleteData, deleteRes } from "./data/delete-data";
+// eslint-disable-next-line import/first
 import {
   beaniesRes,
   facemasksRes,
@@ -25,6 +38,7 @@ import {
   facemasksRedisRes,
   glovesRedisRes,
 } from "./data/product-data";
+// eslint-disable-next-line import/first
 import {
   updateData,
   updateRes,
