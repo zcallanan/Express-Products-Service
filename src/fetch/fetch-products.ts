@@ -29,23 +29,26 @@ const fetchProductData = async (product: string): Promise<void> => {
       // Delete records missing from Product API response
       deleteProduct(product, productIDs);
 
-      await data.forEach((item) => {
-        // Build manufacturers array for this product
-        if (!manufacturers.includes(item.manufacturer)) {
-          const manValue: string = (NODE_ENV === "test")
-            ? `${item.manufacturer}_test`
-            : item.manufacturer;
-          manufacturers.push(manValue);
+      await data.forEach((item, index) => {
+        // Need to limit size of DB rows to < 10,000
+        if (index < 3333) {
+          // Build manufacturers array for this product
+          if (!manufacturers.includes(item.manufacturer)) {
+            const manValue: string = (NODE_ENV === "test")
+              ? `${item.manufacturer}_test`
+              : item.manufacturer;
+            manufacturers.push(manValue);
+          }
+
+          // Build an array of product IDs
+          productIDs.push(item.id);
+
+          // Process colors
+          const colors: string = processColors(item.color);
+
+          // Test if an ID exists in the product's DB, insert else check for update
+          insertProduct(product, item, colors);
         }
-
-        // Build an array of product IDs
-        productIDs.push(item.id);
-
-        // Process colors
-        const colors: string = processColors(item.color);
-
-        // Test if an ID exists in the product's DB, insert else check for update
-        insertProduct(product, item, colors);
       });
 
       // Get availability data
