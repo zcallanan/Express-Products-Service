@@ -28,7 +28,7 @@ export const PASSWORD: string | undefined = process.env.PASSWORD;
 export const DATABASE_URL: string | undefined = process.env.DATABASE_URL;
 
 // Redis values
-export const CACHE_TIMER: number = Number(process.env.CACHE_TIMER) || 300;
+export const CACHE_TIMER: number = Number(process.env.CACHE_TIMER) || 120;
 export const TEST_CACHE_TIMER: number = Number(process.env.TEST_CACHE_TIMER) || 60;
 export const REDIS_URL: string | undefined = process.env.REDIS_URL || undefined;
 
