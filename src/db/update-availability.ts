@@ -89,7 +89,7 @@ const updateAvailability = async (
                 const endString = `${closingString} ${phSumString})`;
                 const merged1: string[] = formatArray.concat(whenThenArray);
                 merged1.push("id");
-                const merged2 = merged1.concat(idArray);
+                const merged2: string[] = merged1.concat(idArray);
                 startString += endString;
                 // Remove extra comma
                 startString = `${startString.slice(0, startString.length - 3)})`;
