@@ -1,10 +1,9 @@
 import fetch from "node-fetch";
 import { RedisClient } from "redis";
 import fetchManufacturerAvailability from "./fetch-availability";
-import insertProduct from "../db/insert-product";
 import deleteProduct from "../db/delete-product";
+import evaluateProductItem from "../shared/evaluate-product-item";
 import { getResult, getClient } from "../shared/redis-client";
-import processColors from "../shared/process-colors";
 import {
   PRODUCT_URL,
   CACHE_TIMER,
@@ -76,6 +75,9 @@ const fetchProductData = async (product: string): Promise<void> => {
       await data.forEach((item, index) => {
         // Need to limit size of DB rows to < 10,000
         if (index < 3333) {
+          // Determine if item should be inserted or updated
+          evaluateProductItem(product, item);
+
           // Tally as each row is examined. When this reaches 3333 the eval is complete
           client.append(
             productTally,
@@ -91,12 +93,6 @@ const fetchProductData = async (product: string): Promise<void> => {
 
           // Build an array of product IDs
           productIDs.push(item.id);
-
-          // Process colors
-          const colors: string = processColors(item.color);
-
-          // Test if an ID exists in the product's DB, insert else check for update
-          insertProduct(product, item, colors);
         }
       });
 

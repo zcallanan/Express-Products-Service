@@ -1,7 +1,8 @@
 import redis from "redis";
 import updateAvailability from "../db/update-availability";
 import { getResult } from "./redis-client";
-import evaluateProductItem from "./evaluate-product-item";
+import massInsert from "../db/mass-insert";
+// import massUpdate from "../db/mass-update";
 import {
   REDIS_URL,
   KEY_EVENT_SET,
@@ -11,18 +12,7 @@ import {
   ACCEPTABLE_APPEND_MESSAGES,
   NODE_ENV,
 } from "./constants";
-import { StringList, ProductRedisHash } from "../types";
-
-const evaluateAllProductRows = async (product: string): Promise<void> => {
-  const result: string | null = await getResult(`${product}`);
-  const productData: ProductRedisHash | undefined = result
-    ? JSON.parse(result)
-    : undefined;
-  if (productData) {
-    // Loop through product items to check whether to insert or update them
-    productData[product].forEach((item) => evaluateProductItem(product, item));
-  }
-};
+import { StringList } from "../types";
 
 const subscriberInit = async (): Promise<redis.RedisClient> => {
   const subscriber: redis.RedisClient = redis.createClient({ url: REDIS_URL });
@@ -86,19 +76,31 @@ const subscriberInit = async (): Promise<redis.RedisClient> => {
             beaniesTriggered = 1;
             // Trigger mass insert and update for the product
             console.log(`Trigger for ${productName}!`);
-            evaluateAllProductRows(productName);
+            // Add a delay to account for Redis
+            setTimeout(() => {
+              massInsert(productName);
+              // massUpdate(productName);
+            }, 3000);
           }
           if (productName === "facemasks" && facemasksTriggered === 0) {
             facemasksTriggered = 1;
             // Trigger mass insert and update for the product
             console.log(`Trigger for ${productName}!`);
-            evaluateAllProductRows(productName);
+            // Add a delay to account for Redis
+            setTimeout(() => {
+              massInsert(productName);
+              // massUpdate(productName);
+            }, 3000);
           }
           if (productName === "gloves" && glovesTriggered === 0) {
             glovesTriggered = 1;
             // Trigger mass insert and update for the product
             console.log(`Trigger for ${productName}!`);
-            evaluateAllProductRows(productName);
+            // Add a delay to account for Redis
+            setTimeout(() => {
+              massInsert(productName);
+              // massUpdate(productName);
+            }, 3000);
           }
         }
       }
