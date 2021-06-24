@@ -8,6 +8,7 @@ import { ProductItemRaw } from "../types";
 import {
   CACHE_TIMER,
   TEST_CACHE_TIMER,
+  NODE_ENV
 } from "../shared/constants";
 
 const insertProduct = async (
@@ -47,21 +48,21 @@ const insertProduct = async (
         "Availability Unknown",
       );
       query(insertQuery);
-      const productInserts: string = (NODE_ENV === "test")
-        ? `${product}-inserts_test`
-        : `${product}-inserts`;
-      client.append(
-        productInserts,
-        `${item.id},`,
-      );
+      // const productInserts: string = (NODE_ENV === "test")
+      //   ? `${product}-inserts_test`
+      //   : `${product}-inserts`;
+      // client.append(
+      //   productInserts,
+      //   `${item.id},`,
+      // );
     } else {
-      const productUpdates: string = (NODE_ENV === "test")
-        ? `${product}-updates_test`
-        : `${product}-updates`;
-      client.append(
-        productUpdates,
-        `${item.id},`,
-      );
+      // const productUpdates: string = (NODE_ENV === "test")
+      //   ? `${product}-updates_test`
+      //   : `${product}-updates`;
+      // client.append(
+      //   productUpdates,
+      //   `${item.id},`,
+      // );
       // If it does exist, check if it needs to be updated
       updateProduct(product, item, colors);
     }

@@ -73,31 +73,41 @@ const updateAvailability = async (
               }
               // If API response's availability differs from what is in the DB
               if (availability !== tableIDs.rows[ind].availability) {
-                i += 1;
+                i += 1; // count the number of updates
+
+                // Start assemble of SQL query components
                 startString += whenThenString;
+                phSumString += placeholderString;
+
+                // Assemble parametirized values for the row
                 whenThenArray.push("id");
                 whenThenArray.push(value.id.toLowerCase());
-                idArray.push(value.id.toLowerCase());
                 whenThenArray.push(availability);
-                phSumString += placeholderString;
+                idArray.push(value.id.toLowerCase());
               }
               // For the last manufacturer, when n is equal to count, then trigger update
               if (manufacturer === manufacturers[manufacturers.length - 1]
                 && count === n
                 && i > 0
               ) {
+                // Assemble the multi-availability-update SQL string
                 const endString = `${closingString} ${phSumString})`;
+                startString += endString;
+                // Remove extra comma in the WHERE statement
+                startString = `${startString.slice(0, startString.length - 3)})`;
+
+                // Assemble the full WHERE statement parameterized values
                 const merged1: string[] = formatArray.concat(whenThenArray);
                 merged1.push("id");
                 const merged2: string[] = merged1.concat(idArray);
-                startString += endString;
-                // Remove extra comma
-                startString = `${startString.slice(0, startString.length - 3)})`;
 
+                // Format SQL query
                 const availabilityUpdate: string = format.withArray(
                   startString,
                   merged2,
                 );
+
+                // Issue SQL UPDATE query
                 query(availabilityUpdate);
                 console.log(`Total availability updates for ${product}: ${i}`);
               }

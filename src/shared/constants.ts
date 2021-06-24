@@ -40,17 +40,51 @@ export const TIMEOUT = Number(process.env.TIMEOUT);
 
 // Strings & lists
 export const KEY_EVENT_SET = "__keyevent@0__:set";
+export const KEY_EVENT_APPEND = "__keyevent@0__:append";
 export const PRODUCT_LIST: string[] = ["beanies", "facemasks", "gloves"];
-export const IGNORE_LIST: string[] = [
-  "manufacturer-list",
-  "manufacturer-list_test",
-  "beanies",
-  "facemasks",
-  "gloves",
-  "beanies_test",
-  "facemasks_test",
-  "gloves_test",
-  "beanies-inserts",
-  "facemasks-inserts",
-  "gloves-inserts",
+// export const AVAIL_UPDATE_IGNORE_LIST: string[] = [
+//   "manufacturer-list",
+//   "manufacturer-list_test",
+//   "beanies",
+//   "facemasks",
+//   "gloves",
+//   "beanies_test",
+//   "facemasks_test",
+//   "gloves_test",
+//   "beanies-inserts",
+//   "facemasks-inserts",
+//   "gloves-inserts",
+//   "beanies-inserts_test",
+//   "facemasks-inserts_test",
+//   "gloves-inserts_test",
+//   "beanies-updates",
+//   "facemasks-updates",
+//   "gloves-updates",
+//   "beanies-updates_test",
+//   "facemasks-updates_test",
+//   "gloves-updates_test",
+//   "beanies_tally",
+//   "facemasks_tally",
+//   "gloves_tally",
+//   "beanies_tally_test",
+//   "facemasks_tally_test",
+//   "gloves_tally_test",
+// ];
+export const ACCEPTABLE_MANUFACTURER_MESSAGES: string[] = [
+  "abiplos",
+  "ippal",
+  "hennex",
+  "juuran",
+  "laion",
+  "niksleh",
+  "okkau",
+  "umpante",
+];
+export const ACCEPTABLE_APPEND_MESSAGES: string[] = [
+  "beanies-tally",
+  "facemasks-tally",
+  "gloves-tally",
+  "beanies-tally_test",
+  "facemasks-tally_test",
+  "gloves-tally_test",
 ];

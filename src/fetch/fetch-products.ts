@@ -29,8 +29,11 @@ const fetchProductData = async (product: string): Promise<void> => {
     data = await response.json();
 
     if ((await Array.isArray(data)) && data.length) {
+      const productName: string = (NODE_ENV === "test")
+        ? `${product}_test`
+        : product;
       client.set(
-        product,
+        productName,
         JSON.stringify({
           [product]: data,
         }),
@@ -40,18 +43,43 @@ const fetchProductData = async (product: string): Promise<void> => {
       // Delete records missing from Product API response
       deleteProduct(product, productIDs);
 
+      // Setup empty redis keys to be appended to. Ensure they expire
+      const productTally: string = (NODE_ENV === "test")
+        ? `${product}-tally_test`
+        : `${product}-tally`;
+      const productInserts: string = (NODE_ENV === "test")
+        ? `${product}-inserts_test`
+        : `${product}-inserts`;
+      const productUpdates: string = (NODE_ENV === "test")
+        ? `${product}-updates_test`
+        : `${product}-updates`;
+
+      client.set(
+        productTally,
+        "",
+        "EX",
+        cache,
+      );
+      client.set(
+        productInserts,
+        "",
+        "EX",
+        cache,
+      );
+      client.set(
+        productUpdates,
+        "",
+        "EX",
+        cache,
+      );
+
       await data.forEach((item, index) => {
         // Need to limit size of DB rows to < 10,000
         if (index < 3333) {
-          // Tally as each row is examined. When this reaches 3332 the eval is complete
-          const productTally: string = (NODE_ENV === "test")
-            ? `${product}-tally_test`
-            : `${product}-tally`;
+          // Tally as each row is examined. When this reaches 3333 the eval is complete
           client.append(
             productTally,
             `${item.id},`,
-            "EX",
-            cache,
           );
           // Build manufacturers array for this product
           if (!manufacturers.includes(item.manufacturer)) {
