@@ -50,4 +50,7 @@ export const IGNORE_LIST: string[] = [
   "beanies_test",
   "facemasks_test",
   "gloves_test",
+  "beanies-inserts",
+  "facemasks-inserts",
+  "gloves-inserts",
 ];

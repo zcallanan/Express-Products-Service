@@ -14,7 +14,7 @@ const fetchManufacturerAvailability = async (
   manufacturer: string,
   product: string,
 ): Promise<void> => {
-  // // Check if Redis has data for the manufacturer
+  // Check if Redis has data for the manufacturer
   const client: RedisClient = await getClient();
   const result: string | null = await getResult(manufacturer);
 

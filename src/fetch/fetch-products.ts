@@ -17,6 +17,9 @@ const fetchProductData = async (product: string): Promise<void> => {
   const client: RedisClient = await getClient();
   const productIDs: string[] = [];
   const manufacturers: string[] = [];
+  const cache: number = (NODE_ENV === "test")
+    ? TEST_CACHE_TIMER
+    : CACHE_TIMER;
 
   const url = `${PRODUCT_URL}${product}`;
   let data: ProductItemRaw[];
@@ -26,12 +29,30 @@ const fetchProductData = async (product: string): Promise<void> => {
     data = await response.json();
 
     if ((await Array.isArray(data)) && data.length) {
+      client.set(
+        product,
+        JSON.stringify({
+          [product]: data,
+        }),
+        "EX",
+        cache,
+      );
       // Delete records missing from Product API response
       deleteProduct(product, productIDs);
 
       await data.forEach((item, index) => {
         // Need to limit size of DB rows to < 10,000
         if (index < 3333) {
+          // Tally as each row is examined. When this reaches 3332 the eval is complete
+          const productTally: string = (NODE_ENV === "test")
+            ? `${product}-tally_test`
+            : `${product}-tally`;
+          client.append(
+            productTally,
+            `${item.id},`,
+            "EX",
+            cache,
+          );
           // Build manufacturers array for this product
           if (!manufacturers.includes(item.manufacturer)) {
             const manValue: string = (NODE_ENV === "test")
@@ -55,10 +76,6 @@ const fetchProductData = async (product: string): Promise<void> => {
       const listString: string = (NODE_ENV === "test")
         ? "manufacturer-list_test"
         : "manufacturer-list";
-
-      const cache: number = (NODE_ENV === "test")
-        ? TEST_CACHE_TIMER
-        : CACHE_TIMER;
 
       // Check for Redis manufacturer list
       const result: string | null = await getResult(listString);

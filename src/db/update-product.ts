@@ -21,6 +21,39 @@ const updateProduct = async (
       item.id,
     );
     const recordValues: QueryResult = await query(updateSelect);
+    // let startString = "UPDATE %I SET"; // product
+    // const caseString = "%I = CASE "; // type|name|colors|price|manufacturer
+    // const whenThenString = "WHEN %I = %L THEN %L "; // "id", item.id, item.(type|name|colors|price|manufacturer)
+    // const whenThenArray: string[] = [];
+    // const endString = "END,";
+    // const whereString = " WHERE %I IN ("; // "id"
+    // let phSumString = "";
+    // const placeholderString = " %L, "; // value.id.toLowerCase()
+    // const placeholderArray: string[] = [];
+    // const formatArray = [product];
+
+    /*
+
+    UPDATE product SET
+      type = CASE
+        WHEN id = item.id THEN item.type WHEN id = item.id THEN item.type...
+      END,
+      name = CASE
+        WHEN id = item.id THEN item.name WHEN id = item.id THEN item.name...
+      END,
+      color = CASE
+        WHEN id = item.id THEN colors WHEN id = item.id THEN colors...
+      END,
+      price = CASE
+        WHEN id = item.id THEN item.price WHEN id = item.id THEN item.price...
+      END,
+      manufacturer = CASE
+        WHEN id = item.id THEN item.manufacturer WHEN id = item.id THEN item.manufacturer...
+      END
+      WHERE id IN (item.id, item.id, item.id, ... item.id)
+
+    */
+
     // Split to get each column value
     const array: string[] = recordValues.rows[0].row.split(",");
 
