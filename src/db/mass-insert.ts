@@ -31,6 +31,8 @@ const massInsert = async (product: string): Promise<void> => {
     const productData: ProductRedisHash | undefined = productResult
       ? JSON.parse(productResult)
       : undefined;
+
+    // Get from redis ids of all product rows that should be inserted
     const productInserts: string = (NODE_ENV === "test")
       ? `${product}-inserts_test`
       : `${product}-inserts`;

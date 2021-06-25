@@ -2,7 +2,7 @@ import redis from "redis";
 import updateAvailability from "../db/update-availability";
 import { getResult } from "./redis-client";
 import massInsert from "../db/mass-insert";
-// import massUpdate from "../db/mass-update";
+import massUpdate from "../db/mass-update";
 import {
   REDIS_URL,
   KEY_EVENT_SET,
@@ -79,7 +79,7 @@ const subscriberInit = async (): Promise<redis.RedisClient> => {
             // Add a delay to account for Redis
             setTimeout(() => {
               massInsert(productName);
-              // massUpdate(productName);
+              massUpdate(productName);
             }, 3000);
           }
           if (productName === "facemasks" && facemasksTriggered === 0) {
@@ -89,7 +89,7 @@ const subscriberInit = async (): Promise<redis.RedisClient> => {
             // Add a delay to account for Redis
             setTimeout(() => {
               massInsert(productName);
-              // massUpdate(productName);
+              massUpdate(productName);
             }, 3000);
           }
           if (productName === "gloves" && glovesTriggered === 0) {
@@ -99,7 +99,7 @@ const subscriberInit = async (): Promise<redis.RedisClient> => {
             // Add a delay to account for Redis
             setTimeout(() => {
               massInsert(productName);
-              // massUpdate(productName);
+              massUpdate(productName);
             }, 3000);
           }
         }
