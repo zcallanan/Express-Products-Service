@@ -1,12 +1,12 @@
 import format from "pg-format";
 import { QueryResult } from "pg";
 import { RedisClient } from "redis";
-import { getClient } from "./redis-client";
-import query from "../db/query";
+import { getClient } from "../shared/redis-client";
+import query from "./query";
 import { ProductItemRaw } from "../types";
-import { NODE_ENV } from "./constants";
+import { NODE_ENV } from "../shared/constants";
 
-const evaluateProductItem = async (
+const evalInsertUpdate = async (
   product: string,
   item: ProductItemRaw,
 ): Promise<void> => {
@@ -43,8 +43,8 @@ const evaluateProductItem = async (
     }
   } catch (err) {
     console.log("Unable to evaluate", product, item, err);
-    evaluateProductItem(product, item);
+    evalInsertUpdate(product, item);
   }
 };
 
-export default evaluateProductItem;
+export default evalInsertUpdate;

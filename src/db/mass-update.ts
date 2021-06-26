@@ -181,15 +181,11 @@ const massUpdate = async (product: string): Promise<void> => {
               // Combine it all
               formatString = `${formatString}${whereString})`; // Adds closing parenthesis
               formatArray = formatArray.concat(whereArray);
-
-              console.log("formatString:", formatString);
-              console.log("formatArray:", formatArray);
               // Format query
               const updateQuery: string = format.withArray(
                 formatString,
                 formatArray,
               );
-              console.log("updateQuery:", updateQuery);
               // Issue query
               query(updateQuery);
             }

@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
 import { RedisClient } from "redis";
 import fetchManufacturerAvailability from "./fetch-availability";
-import deleteProduct from "../db/delete-product";
-import evaluateProductItem from "../shared/evaluate-product-item";
+import evalToDelete from "../db/eval-to-delete";
+import evalInsertUpdate from "../db/eval-insert-update";
 import { getResult, getClient } from "../shared/redis-client";
 import {
   PRODUCT_URL,
@@ -14,7 +14,7 @@ import { StringList, ProductItemRaw } from "../types";
 
 const fetchProductData = async (product: string): Promise<void> => {
   const client: RedisClient = await getClient();
-  const productIDs: string[] = [];
+  // const productIDs: string[] = [];
   const manufacturers: string[] = [];
   const cache: number = (NODE_ENV === "test")
     ? TEST_CACHE_TIMER
@@ -39,8 +39,6 @@ const fetchProductData = async (product: string): Promise<void> => {
         "EX",
         cache,
       );
-      // Delete records missing from Product API response
-      deleteProduct(product, productIDs);
 
       // Setup empty redis keys to be appended to. Ensure they expire
       const productTally: string = (NODE_ENV === "test")
@@ -49,6 +47,9 @@ const fetchProductData = async (product: string): Promise<void> => {
       const productInserts: string = (NODE_ENV === "test")
         ? `${product}-inserts_test`
         : `${product}-inserts`;
+      const productDeletes: string = (NODE_ENV === "test")
+        ? `${product}-deletes_test`
+        : `${product}-deletes`;
       const productUpdates: string = (NODE_ENV === "test")
         ? `${product}-updates_test`
         : `${product}-updates`;
@@ -66,17 +67,26 @@ const fetchProductData = async (product: string): Promise<void> => {
         cache,
       );
       client.set(
+        productDeletes,
+        "",
+        "EX",
+        cache,
+      );
+      client.set(
         productUpdates,
         "",
         "EX",
         cache,
       );
 
+      // Evaluate DB rows for deletion, delay for redis
+      setTimeout(() => evalToDelete(product), 2000);
+
       await data.forEach((item, index) => {
         // Need to limit size of DB rows to < 10,000
         if (index < 3333) {
           // Determine if item should be inserted or updated
-          evaluateProductItem(product, item);
+          evalInsertUpdate(product, item);
 
           // Tally as each row is examined. When this reaches 3333 the eval is complete
           client.append(
@@ -92,7 +102,7 @@ const fetchProductData = async (product: string): Promise<void> => {
           }
 
           // Build an array of product IDs
-          productIDs.push(item.id);
+          // productIDs.push(item.id);
         }
       });
 

@@ -39,6 +39,7 @@ const massInsert = async (product: string): Promise<void> => {
     let insertsData: string | null = await getResult(productInserts);
     if (insertsData && productData) {
       const productArray: ProductItemRaw[] = productData[productName];
+      // Remove trailing comma
       insertsData = insertsData.slice(0, insertsData.length - 1);
       const insertIdArray: string[] = insertsData.split(",");
       insertIdArray.forEach((insertId, index) => {

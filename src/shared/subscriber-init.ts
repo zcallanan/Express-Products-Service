@@ -3,6 +3,7 @@ import updateAvailability from "../db/update-availability";
 import { getResult } from "./redis-client";
 import massInsert from "../db/mass-insert";
 import massUpdate from "../db/mass-update";
+import massDelete from "../db/mass-delete";
 import {
   REDIS_URL,
   KEY_EVENT_SET,
@@ -77,30 +78,33 @@ const subscriberInit = async (): Promise<redis.RedisClient> => {
             // Trigger mass insert and update for the product
             console.log(`Trigger for ${productName}!`);
             // Add a delay to account for Redis
+            setTimeout(() => massDelete(productName), 4000);
             setTimeout(() => {
               massInsert(productName);
               massUpdate(productName);
-            }, 3000);
+            }, 8000);
           }
           if (productName === "facemasks" && facemasksTriggered === 0) {
             facemasksTriggered = 1;
             // Trigger mass insert and update for the product
             console.log(`Trigger for ${productName}!`);
             // Add a delay to account for Redis
+            setTimeout(() => massDelete(productName), 4000);
             setTimeout(() => {
               massInsert(productName);
               massUpdate(productName);
-            }, 3000);
+            }, 8000);
           }
           if (productName === "gloves" && glovesTriggered === 0) {
             glovesTriggered = 1;
             // Trigger mass insert and update for the product
             console.log(`Trigger for ${productName}!`);
             // Add a delay to account for Redis
+            setTimeout(() => massDelete(productName), 4000);
             setTimeout(() => {
               massInsert(productName);
               massUpdate(productName);
-            }, 3000);
+            }, 8000);
           }
         }
       }
