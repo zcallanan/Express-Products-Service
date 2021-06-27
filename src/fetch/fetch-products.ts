@@ -15,7 +15,7 @@ import { StringList, ProductItemRaw } from "../types";
 const fetchProductData = async (product: string): Promise<void> => {
   const client: RedisClient = await getClient();
   // const productIDs: string[] = [];
-  const manufacturers: string[] = [];
+  let manufacturers: string[] = [];
   const cache: number = (NODE_ENV === "test")
     ? TEST_CACHE_TIMER
     : CACHE_TIMER;
@@ -80,31 +80,21 @@ const fetchProductData = async (product: string): Promise<void> => {
       );
 
       // Evaluate DB rows for deletion, delay for redis
-      setTimeout(() => evalToDelete(product), 2000);
+      setTimeout(() => {
+        // Check if product IDs are found in table id list
+        evalInsertUpdate(productName);
 
-      await data.forEach((item, index) => {
-        // Need to limit size of DB rows to < 10,000
-        if (index < 3333) {
-          // Determine if item should be inserted or updated
-          evalInsertUpdate(product, item);
+        // Check if table IDs are found in product id list
+        evalToDelete(productName);
+      }, 2000);
 
-          // Tally as each row is examined. When this reaches 3333 the eval is complete
-          client.append(
-            productTally,
-            `${item.id},`,
-          );
-          // Build manufacturers array for this product
-          if (!manufacturers.includes(item.manufacturer)) {
-            const manValue: string = (NODE_ENV === "test")
-              ? `${item.manufacturer}_test`
-              : item.manufacturer;
-            manufacturers.push(manValue);
-          }
-
-          // Build an array of product IDs
-          // productIDs.push(item.id);
-        }
-      });
+      // Build manufacturers array for this product
+      manufacturers = [...new Set(data.map((item) => item.manufacturer))];
+      if (NODE_ENV === "test") {
+        manufacturers.forEach((manufacturer, index) => {
+          manufacturers[index] = `${manufacturer}_test`;
+        });
+      }
 
       // Get availability data
       const listString: string = (NODE_ENV === "test")

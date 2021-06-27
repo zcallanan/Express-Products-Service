@@ -195,7 +195,7 @@ const massUpdate = async (product: string): Promise<void> => {
     }
   } catch (err) {
     massUpdate(product);
-    console.log("Mass Insert failed!", err);
+    console.log("Mass Update failed!", err);
   }
 };
 

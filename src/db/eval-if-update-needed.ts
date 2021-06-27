@@ -47,7 +47,8 @@ const evalIfUpdateNeeded = async (product: string, item: ProductItemRaw): Promis
       stringArray.push("m");
     }
   } catch (err) {
-    console.log(`Failed to retrieve record data for ${item.id}`);
+    evalIfUpdateNeeded(product, item);
+    console.log(`Failed to retrieve record data for ${item.id}`, err);
   }
   return stringArray;
 };

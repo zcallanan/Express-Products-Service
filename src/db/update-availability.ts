@@ -117,6 +117,7 @@ const updateAvailability = async (
       });
     });
   } catch (err) {
+    updateAvailability(manufacturers, product);
     console.log("Failed to update availability for", product, err);
   }
 };

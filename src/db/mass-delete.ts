@@ -38,8 +38,8 @@ const massDelete = async (product: string): Promise<void> => {
       });
     }
   } catch (err) {
-    console.log(`Failure to delete ${product} data`);
     massDelete(product);
+    console.log(`Failure to delete ${product} data`, err);
   }
 };
 

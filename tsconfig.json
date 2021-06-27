@@ -15,6 +15,7 @@
     "lib": [
       "esnext"
     ],
+    "downlevelIteration": true,
   },
   "include": [
     "src/**/*"

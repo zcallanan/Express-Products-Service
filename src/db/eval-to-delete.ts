@@ -41,7 +41,8 @@ const evalToDelete = async (product: string): Promise<void> => {
       });
     }
   } catch (err) {
-    console.log("Failed to delete", product, err);
+    evalToDelete(product);
+    console.log(`Failed to evaluate ${product} for deletion.`, err);
   }
 };
 
