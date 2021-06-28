@@ -1,10 +1,9 @@
 import fetch from "node-fetch";
 import { RedisClient } from "redis";
 import fetchManufacturerAvailability from "./fetch-availability";
-import insertProduct from "../db/insert-product";
-import deleteProduct from "../db/delete-product";
+import evalToDelete from "../db/eval-to-delete";
+import evalInsertUpdate from "../db/eval-insert-update";
 import { getResult, getClient } from "../shared/redis-client";
-import processColors from "../shared/process-colors";
 import {
   PRODUCT_URL,
   CACHE_TIMER,
@@ -15,8 +14,11 @@ import { StringList, ProductItemRaw } from "../types";
 
 const fetchProductData = async (product: string): Promise<void> => {
   const client: RedisClient = await getClient();
-  const productIDs: string[] = [];
-  const manufacturers: string[] = [];
+  // const productIDs: string[] = [];
+  let manufacturers: string[] = [];
+  const cache: number = (NODE_ENV === "test")
+    ? TEST_CACHE_TIMER
+    : CACHE_TIMER;
 
   const url = `${PRODUCT_URL}${product}`;
   let data: ProductItemRaw[];
@@ -26,39 +28,78 @@ const fetchProductData = async (product: string): Promise<void> => {
     data = await response.json();
 
     if ((await Array.isArray(data)) && data.length) {
-      // Delete records missing from Product API response
-      deleteProduct(product, productIDs);
+      const productName: string = (NODE_ENV === "test")
+        ? `${product}_test`
+        : product;
+      client.set(
+        productName,
+        JSON.stringify({
+          [product]: data,
+        }),
+        "EX",
+        cache,
+      );
 
-      await data.forEach((item, index) => {
-        // Need to limit size of DB rows to < 10,000
-        if (index < 3333) {
-          // Build manufacturers array for this product
-          if (!manufacturers.includes(item.manufacturer)) {
-            const manValue: string = (NODE_ENV === "test")
-              ? `${item.manufacturer}_test`
-              : item.manufacturer;
-            manufacturers.push(manValue);
-          }
+      // Setup empty redis keys to be appended to. Ensure they expire
+      const productTally: string = (NODE_ENV === "test")
+        ? `${product}-tally_test`
+        : `${product}-tally`;
+      const productInserts: string = (NODE_ENV === "test")
+        ? `${product}-inserts_test`
+        : `${product}-inserts`;
+      const productDeletes: string = (NODE_ENV === "test")
+        ? `${product}-deletes_test`
+        : `${product}-deletes`;
+      const productUpdates: string = (NODE_ENV === "test")
+        ? `${product}-updates_test`
+        : `${product}-updates`;
 
-          // Build an array of product IDs
-          productIDs.push(item.id);
+      client.set(
+        productTally,
+        "",
+        "EX",
+        cache,
+      );
+      client.set(
+        productInserts,
+        "",
+        "EX",
+        cache,
+      );
+      client.set(
+        productDeletes,
+        "",
+        "EX",
+        cache,
+      );
+      client.set(
+        productUpdates,
+        "",
+        "EX",
+        cache,
+      );
 
-          // Process colors
-          const colors: string = processColors(item.color);
+      // Evaluate DB rows for deletion, delay for redis
+      setTimeout(() => {
+        // Check if product IDs are found in table id list
+        evalInsertUpdate(productName);
 
-          // Test if an ID exists in the product's DB, insert else check for update
-          insertProduct(product, item, colors);
-        }
-      });
+        // Check if table IDs are found in product id list
+        evalToDelete(productName);
+      }, 2000);
+
+      // Build manufacturers array for this product
+      manufacturers = [...new Set(data.map((item) => item.manufacturer))];
+      if (NODE_ENV === "test") {
+        manufacturers.forEach((manufacturer, index) => {
+          manufacturers[index] = `${manufacturer}_test`;
+        });
+      }
 
       // Get availability data
       const listString: string = (NODE_ENV === "test")
         ? "manufacturer-list_test"
         : "manufacturer-list";
-
-      const cache: number = (NODE_ENV === "test")
-        ? TEST_CACHE_TIMER
-        : CACHE_TIMER;
 
       // Check for Redis manufacturer list
       const result: string | null = await getResult(listString);

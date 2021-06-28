@@ -40,14 +40,24 @@ export const TIMEOUT = Number(process.env.TIMEOUT);
 
 // Strings & lists
 export const KEY_EVENT_SET = "__keyevent@0__:set";
+export const KEY_EVENT_APPEND = "__keyevent@0__:append";
 export const PRODUCT_LIST: string[] = ["beanies", "facemasks", "gloves"];
-export const IGNORE_LIST: string[] = [
-  "manufacturer-list",
-  "manufacturer-list_test",
-  "beanies",
-  "facemasks",
-  "gloves",
-  "beanies_test",
-  "facemasks_test",
-  "gloves_test",
+
+export const ACCEPTABLE_MANUFACTURER_MESSAGES: string[] = [
+  "abiplos",
+  "ippal",
+  "hennex",
+  "juuran",
+  "laion",
+  "niksleh",
+  "okkau",
+  "umpante",
+];
+export const ACCEPTABLE_APPEND_MESSAGES: string[] = [
+  "beanies-tally",
+  "facemasks-tally",
+  "gloves-tally",
+  "beanies-tally_test",
+  "facemasks-tally_test",
+  "gloves-tally_test",
 ];
